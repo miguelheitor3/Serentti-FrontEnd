@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -202,19 +201,12 @@
 
     @media (max-width: 768px) {
       .hero {
-        background-image:
-          linear-gradient(to top, rgba(255,255,255,1) 30%, rgba(255,255,255,0.55) 70%, rgba(255,255,255,0.2) 100%),
-          url('Images/Hero/Hero.png');
-        background-position: center top;
-        background-size: cover;
-        justify-content: flex-end;
+        background-image: none; /* Em celulares, fundo limpo é melhor para leitura */
+        justify-content: center;
         text-align: center;
-        padding: 0 24px 60px;
-        min-height: 100svh;
+        padding: 0 24px;
+        min-height: 60vh;
       }
-      .hero-content { max-width: 100%; }
-      .hero-actions { display: flex; flex-direction: column; gap: 12px; align-items: center; }
-      .btn-ghost { margin-left: 0; }
     }
 
     .btn-primary {
@@ -392,84 +384,12 @@
     }
     .toast.show { transform: translateY(0); }
 
-    /* ── HAMBURGUER ── */
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      gap: 5px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-      z-index: 200;
-    }
-    .hamburger span {
-      display: block;
-      width: 22px;
-      height: 1.5px;
-      background: var(--accent);
-      transition: 0.3s;
-    }
-    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
-    .hamburger.open span:nth-child(2) { opacity: 0; }
-    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
-
-    .mobile-nav {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(255,255,255,0.98);
-      z-index: 150;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 40px;
-    }
-    .mobile-nav.open { display: flex; }
-    .mobile-nav a {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 2rem;
-      font-weight: 300;
-      letter-spacing: 0.05em;
-      color: var(--accent);
-      text-decoration: none;
-    }
-
     /* ── RESPONSIVO ── */
     @media (max-width: 768px) {
-      header { padding: 15px 20px; }
+      header { padding: 15px 24px; }
       nav { display: none; }
-      .hamburger { display: flex; }
-      .categories-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .cat-card { height: 260px; }
-      .cat-image-wrap { height: 180px; }
-      section { padding: 60px 20px; }
-      .section-title { font-size: 2rem; }
-      .products-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
-      .product-info { padding: 14px; }
-      .product-name { font-size: 1rem; }
-
-      /* Botão "Adicionar" sempre visível no mobile */
-      .overlay-btn {
-        opacity: 1 !important;
-        transform: translateX(-50%) translateY(0) !important;
-        font-size: 0.55rem;
-        padding: 8px 14px;
-        bottom: 10px;
-      }
-
-      /* Setas do carrossel visíveis no mobile */
-      .product-card .swiper-button-next,
-      .product-card .swiper-button-prev { opacity: 0.7; }
-
-      .footer-top { grid-template-columns: 1fr; gap: 30px; }
-      footer { padding: 50px 20px 30px; }
-      .logo { font-size: 1.4rem; }
-    }
-
-    @media (max-width: 400px) {
-      .products-grid { grid-template-columns: 1fr; }
       .categories-grid { grid-template-columns: 1fr; }
+      section { padding: 80px 24px; }
     }
 
     /* ═══════════════════════════════
@@ -763,13 +683,6 @@
     </div>
   </div>
 
-  <div class="mobile-nav" id="mobile-nav">
-    <a href="#produtos" onclick="closeMobileNav()">Coleção</a>
-    <a href="#categorias" onclick="closeMobileNav()">Categorias</a>
-    <a href="#sobre" onclick="closeMobileNav()">Nossa Essência</a>
-    <button class="btn-primary" onclick="closeMobileNav(); openCheckout()">🛒 Carrinho</button>
-  </div>
-
   <header>
     <a href="index.html" class="logo">
       Serentti
@@ -783,9 +696,6 @@
     <div class="header-actions">
       <button class="icon-btn" onclick="openCheckout()">
         🛒 <span class="cart-count" id="cart-count">0</span>
-      </button>
-      <button class="hamburger" id="hamburger" onclick="toggleMobileNav()">
-        <span></span><span></span><span></span>
       </button>
     </div>
   </header>
@@ -979,20 +889,6 @@
 
 
   <script>
-
-  function toggleMobileNav() {
-    const nav = document.getElementById('mobile-nav');
-    const btn = document.getElementById('hamburger');
-    nav.classList.toggle('open');
-    btn.classList.toggle('open');
-    document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
-  }
-
-  function closeMobileNav() {
-    document.getElementById('mobile-nav').classList.remove('open');
-    document.getElementById('hamburger').classList.remove('open');
-    document.body.style.overflow = '';
-  }
 
   // ── SWIPER ──
   // ── SWIPER COM PREÇO DINÂMICO ──
