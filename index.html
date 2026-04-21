@@ -267,14 +267,30 @@
     }
 
     @media (max-width: 768px) {
-      .hero {
-        background-image: none; /* Em celulares, fundo limpo é melhor para leitura */
-        justify-content: center;
-        text-align: center;
-        padding: 0 24px;
-        min-height: 60vh;
-      }
+    .hero {
+      /* Mantém a imagem e adiciona um fundo branco suave atrás do texto para leitura */
+      background-image: 
+        linear-gradient(to top, rgba(255,255,255,0.9) 20%, rgba(255,255,255,0.2) 60%), 
+        url('Images/Hero/Hero.png') !important;
+      
+      background-position: 75% center !important; /* Ajusta a posição da modelo no celular */
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 24px;
+      min-height: 70vh; /* Aumentei um pouco a altura para destacar a foto */
     }
+  
+    .hero-content {
+      max-width: 100%;
+    }
+  
+    .hero-title {
+      font-size: 2.2rem !important; /* Diminui o título para não quebrar em telas pequenas */
+    }
+  }
 
     .btn-primary {
       background: var(--accent); color: #fff;
