@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Serentti Bijoux – Minimalista & Prata</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /*setas */
+    .product-card .swiper-button-next,
+    .product-card .swiper-button-prev {
+      color: white;
+      background: rgba(0,0,0,0.25);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      transition: 0.3s;
+    }
+
+.overlay-btn.disabled {
+  background: #999;
+  cursor: not-allowed;
+  opacity: 0.0;
+}
+    /* aparece só no hover */
+    .product-card:hover .swiper-button-next,
+    .product-card:hover .swiper-button-prev {
+      opacity: 1;
+    }
+
+    /* tamanho da seta */
+    .product-card .swiper-button-next::after,
+    .product-card .swiper-button-prev::after {
+      font-size: 12px;
+    }
+
+    /* Container do carrossel ocupa toda a área da imagem */
+    .productSwiper {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Add Animation */
+    .overlay-btn.added {
+      background-color: #27ae60 !important; /* Verde suave de sucesso */
+      transform: translateX(-50%) scale(0.95); /* Efeito de 'pressionar' */
+      pointer-events: none; /* Evita cliques duplos durante a animação */
+    }
+
+    /* Transição suave para todas as propriedades */
+    .overlay-btn {
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Lixeira Checkout */
+    .remove-item {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-left: 10px;
+      color: var(--text-dim);
+      transition: 0.2s;
+    }
+
+    .remove-item:hover {
+      color: #cc0000;
+      transform: scale(1.2);
+    }
+
+    /* Estilo das Bolinhas (Pagination) */
+    .product-card .swiper-pagination-bullet {
+      background: var(--silver-light);
+      opacity: 1;
+      width: 6px;
+      height: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .product-card .swiper-pagination-bullet-active {
+      background: var(--accent);
+      width: 18px; /* Efeito pílula minimalista */
+      border-radius: 4px;
+    }
+
+    /* Garante que o botão 'Adicionar' fique acima do carrossel */
+    .overlay-btn {
+      z-index: 10;
+    }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f7f7f7;
+      --surface2: #efefef;
+      --accent: #1a1a1a;
+      --silver: #999999;
+      --silver-light: #d1d1d1;
+      --text: #222222;
+      --text-dim: #777777;
+      --border: rgba(0,0,0,0.06);
+      --shadow-soft: 0 10px 40px rgba(0,0,0,0.04);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      cursor: pointer;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(255,255,255,0.95);
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.98);
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem; font-weight: 300; letter-spacing: 0.15em;
+      color: var(--accent); text-decoration: none;
+      display: flex; flex-direction: column; line-height: 1;
+    }
+    .logo span { font-size: 0.55rem; letter-spacing: 0.4em; color: var(--text-dim); font-family: 'Jost', sans-serif; text-transform: uppercase; margin-top: 4px; }
+
+    nav { display: flex; gap: 40px; }
+    nav a {
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-dim); text-decoration: none;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: var(--accent); }
+
+    .header-actions { display: flex; gap: 20px; align-items: center; }
+    .icon-btn { background: none; border: none; color: var(--text); cursor: pointer; font-size: 1.1rem; }
+    .cart-count {
+      background: var(--accent); color: #fff;
+      font-size: 0.6rem; border-radius: 50%;
+      width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    .hero {
+      min-height: 85vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 0 10%;
+
+      background-image:
+        linear-gradient(to right, #ffffff 15%, rgba(255,255,255,0.0) 55%),
+        url('Images/Hero/Hero.png');
+
+      background-repeat: no-repeat;
+      background-position: right center;
+
+      /* 🔥 AQUI ESTÁ O SEGREDO */
+      background-size: cover;
+    }
+
+    .hero-content {
+      max-width: 450px;
+      z-index: 2;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.2rem, 4vw, 3.8rem); /* Ajuste leve no tamanho */
+      font-weight: 300;
+      line-height: 1.1;
+      margin-bottom: 20px;
+    }
+
+    .hero-desc {
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      line-height: 1.6;
+      margin-bottom: 35px;
+    }
+
+    /* Ajuste para telas menores */
+    @media (max-width: 1024px) {
+      .hero {
+        background-position: calc(100% + 100px) center; /* Empurra a modelo um pouco para fora para dar espaço ao texto */
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        background-image: none; /* Em celulares, fundo limpo é melhor para leitura */
+        justify-content: center;
+        text-align: center;
+        padding: 0 24px;
+        min-height: 60vh;
+      }
+    }
+
+    .btn-primary {
+      background: var(--accent); color: #fff;
+      border: none; padding: 15px 40px;
+      font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+      cursor: pointer; text-decoration: none; transition: 0.3s;
+      display: inline-block;
+    }
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+    .btn-ghost {
+      border: 1px solid var(--silver-light); color: var(--text);
+      padding: 14px 35px; font-size: 0.7rem; letter-spacing: 0.2em;
+      text-transform: uppercase; text-decoration: none; margin-left: 15px; transition: 0.3s;
+      display: inline-block;
+    }
+    .btn-ghost:hover { border-color: var(--accent); }
+
+    /* ── MARQUEE ANIMADA ── */
+    .marquee-wrap {
+      background: var(--surface2);
+      padding: 15px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+    }
+
+    .marquee-content {
+      display: flex;
+      gap: 50px;
+      white-space: nowrap;
+      animation: scroll 20s linear infinite;
+    }
+
+    .marquee-item {
+      color: var(--text-dim);
+      font-size: 0.65rem;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      display: flex;
+      align-items: center;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .marquee-wrap:hover .marquee-content {
+      animation-play-state: paused;
+    }
+
+    /* ── PRODUCTS ── */
+    section { padding: 120px 48px; }
+    .section-label { font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase; color: var(--silver); margin-bottom: 15px; }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; font-weight: 300; margin-bottom: 50px; }
+
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; }
+    .product-card { background: #fff; border: 1px solid var(--border); transition: 0.4s; }
+    .product-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-soft); }
+
+    .product-img-wrap {
+      aspect-ratio: 1/1; background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: block;
+      transition: transform 0.5s;
+    }
+    .product-card:hover .product-image {
+      transform: scale(1.05);
+    }
+
+    .product-emoji { font-size: 4rem; filter: grayscale(1) contrast(1.2); transition: 0.5s; }
+    .product-card:hover .product-emoji { transform: scale(1.1); filter: grayscale(0.5); }
+
+    .product-info { padding: 25px; text-align: center; }
+    .product-name { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; margin-bottom: 8px; }
+    .product-material { font-size: 0.6rem; letter-spacing: 0.15em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 15px; }
+    .product-price { font-size: 1.1rem; color: var(--accent); font-weight: 400; }
+
+    .overlay-btn {
+      position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--accent); color: #fff; border: none; padding: 10px 20px;
+      font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase;
+      opacity: 0; transition: 0.3s; cursor: pointer;
+      z-index: 2;
+    }
+    .product-card:hover .overlay-btn { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── CATEGORIES ── */
+    .categories-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .cat-card {
+      height: 350px;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start; /* ✅ agora começa do topo */
+      padding-top: 0; /* garante que não tem espaço */
+      text-decoration: none; /* remove o sublinhado */
+      color: var(--text);    /* mantém a cor padrão */
+    }
+    .cat-card:hover { background: #fff; border-color: var(--silver); }
+    .cat-emoji { font-size: 3rem; margin-bottom: 20px; opacity: 0.6; }
+    .cat-image-wrap {
+      width: 100%;
+      height: 220px; /* controla altura da imagem */
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .cat-1 .cat-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 75%;
+      filter: grayscale(1);
+      opacity: 0.7;
+      transition: 0.4s;
+    }
+
+    .cat-2 .cat-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 60%;
+      filter: grayscale(1);
+      opacity: 0.7;
+      transition: 0.4s;
+    }
+
+    .cat-3 .cat-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 79%;
+      filter: grayscale(1);
+      opacity: 0.7;
+      transition: 0.4s;
+    }
+
+    .cat-card:hover .cat-image {
+      filter: grayscale(0);   /* 🔥 volta a cor */
+      opacity: 1;
+      transform: scale(1.05);
+    }
+
+    .cat-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; letter-spacing: 0.05em; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--surface); padding: 80px 48px 40px; border-top: 1px solid var(--border); }
+    .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 50px; margin-bottom: 60px; }
+    .footer-col-title { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 25px; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 12px; }
+    .footer-col ul a { color: var(--text-dim); text-decoration: none; font-size: 0.85rem; transition: 0.3s; }
+    .footer-col ul a:hover { color: var(--accent); padding-left: 5px; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 30px; right: 30px; background: var(--accent); color: #fff;
+      padding: 15px 30px; font-size: 0.75rem; letter-spacing: 0.1em; z-index: 1000;
+      transform: translateY(100px); transition: 0.5s;
+    }
+    .toast.show { transform: translateY(0); }
+
+    /* ── RESPONSIVO ── */
+    @media (max-width: 768px) {
+      header { padding: 15px 24px; }
+      nav { display: none; }
+      .categories-grid { grid-template-columns: 1fr; }
+      section { padding: 80px 24px; }
+    }
+
+    /* ═══════════════════════════════
+        CHECKOUT COM BARRA ANIMADA
+    ════════════════════════════════ */
+    #checkout-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10,10,10,0.6);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    #checkout-overlay.open { display: flex; }
+
+    .checkout-modal {
+      background: #fff;
+      width: 100%; max-width: 620px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .checkout-header {
+      padding: 30px 36px 22px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .checkout-header-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; font-weight: 300; letter-spacing: 0.05em;
+    }
+    .checkout-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.1rem; color: var(--text-dim); transition: 0.2s; line-height: 1;
+    }
+    .checkout-close:hover { color: var(--accent); }
+
+    .checkout-body { padding: 28px 36px 36px; }
+
+    /* NOVA ESTRUTURA DA BARRA DE PROGRESSO */
+    .steps-container { margin-bottom: 32px; }
+    .steps {
+      display: flex; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .step {
+      flex: 1; text-align: center;
+      font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-dim); transition: 0.3s;
+    }
+    .step.active { color: var(--accent); font-weight: 500; }
+
+    .progress-track {
+      height: 3px; background: var(--surface2);
+      border-radius: 10px; position: relative; overflow: hidden;
+    }
+    .progress-fill {
+      position: absolute; height: 100%; width: 33.33%;
+      background: var(--accent);
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Panels */
+    .checkout-panel { display: none; }
+    .checkout-panel.active { display: block; }
+
+    /* Resumo */
+    .order-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 0; border-bottom: 1px solid var(--border);
+    }
+    .order-item:last-child { border-bottom: none; }
+    .order-item-img {
+      width: 56px; height: 56px; background: var(--surface);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; flex-shrink: 0;
+    }
+    .order-item-name { font-family: 'Cormorant Garamond', serif; font-size: 1rem; }
+    .order-item-material { font-size: 0.6rem; letter-spacing: 0.1em; color: var(--text-dim); text-transform: uppercase; margin-top: 3px; }
+    .order-item-price { margin-left: auto; font-size: 0.95rem; color: var(--accent); font-weight: 400; }
+
+    .order-total {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 0 0; margin-top: 4px;
+    }
+    .order-total-label { font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); }
+    .order-total-value { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; color: var(--accent); }
+
+    /* Form */
+    .form-section-title {
+      font-size: 0.6rem; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--silver); margin: 24px 0 14px;
+    }
+    .form-section-title:first-child { margin-top: 0; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-row.trio { grid-template-columns: 2fr 1fr 1fr; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); }
+    .field input, .field select {
+      border: 1px solid var(--silver-light); padding: 11px 13px;
+      font-family: 'Jost', sans-serif; font-size: 0.85rem; font-weight: 300;
+      color: var(--text); background: #fff; outline: none; transition: 0.25s;
+    }
+    .field input:focus, .field select:focus { border-color: var(--accent); }
+    .field input::placeholder { color: var(--silver-light); }
+
+    /* Pagamento */
+    .payment-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+    .pay-option {
+      border: 1px solid var(--border); padding: 14px 10px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      cursor: pointer; transition: 0.3s; text-align: center;
+    }
+    .pay-option:hover { border-color: var(--silver); }
+    .pay-option.selected { border-color: var(--accent); }
+    .pay-icon { font-size: 1.3rem; }
+    .pay-label { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); }
+    .pay-option.selected .pay-label { color: var(--accent); }
+
+    .pay-info {
+      padding: 16px; background: var(--surface); border: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--text-dim); line-height: 1.7; text-align: center;
+      display: none; margin-bottom: 14px;
+    }
+    .pay-info.show { display: block; }
+
+    /* Botões */
+    .checkout-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 28px; }
+    .btn-ck-back {
+      border: 1px solid var(--silver-light); color: var(--text-dim);
+      padding: 12px 24px; font-size: 0.65rem; letter-spacing: 0.15em;
+      text-transform: uppercase; background: none; cursor: pointer; transition: 0.3s;
+    }
+    .btn-ck-back:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-ck-next {
+      background: var(--accent); color: #fff; border: none;
+      padding: 12px 28px; font-size: 0.65rem; letter-spacing: 0.2em;
+      text-transform: uppercase; cursor: pointer; transition: 0.3s;
+    }
+    .btn-ck-next:hover { opacity: 0.82; }
+
+    /* Confirmação */
+    .confirm-screen { text-align: center; padding: 16px 0 6px; }
+    .confirm-icon { font-size: 2.8rem; margin-bottom: 18px; }
+    .confirm-title { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 300; margin-bottom: 10px; }
+    .confirm-title em { font-style: italic; color: var(--silver); }
+    .confirm-sub { font-size: 0.82rem; color: var(--text-dim); line-height: 1.7; }
+    .confirm-order-num {
+      display: inline-block; margin: 18px 0;
+      padding: 9px 22px; border: 1px solid var(--silver-light);
+      font-size: 0.65rem; letter-spacing: 0.3em; color: var(--text-dim); text-transform: uppercase;
+    }
+
+    @media (max-width: 768px) {
+      .checkout-modal { max-height: 100vh; }
+      .checkout-header, .checkout-body { padding: 20px; }
+      .form-row, .form-row.trio { grid-template-columns: 1fr; }
+      .payment-methods { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+
+<script src="https://sdk.mercadopago.com/js/v2"></script>
+
+<body>
+
+  <div class="toast" id="toast">Item adicionado com sucesso.</div>
+
+  <div id="checkout-overlay">
+    <div class="checkout-modal">
+
+      <div class="checkout-header">
+        <h2 class="checkout-header-title">Finalizar Pedido</h2>
+        <button class="checkout-close" onclick="closeCheckout()">✕</button>
+      </div>
+
+      <div class="checkout-body">
+
+        <div class="steps-container">
+          <div class="steps">
+            <div class="step active" id="step-1">Resumo</div>
+            <div class="step" id="step-2">Entrega</div>
+            <div class="step" id="step-3">Pagamento</div>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="progress-bar"></div>
+          </div>
+        </div>
+
+        <div class="checkout-panel active" id="panel-1">
+          <div id="order-list"></div>
+          <div class="order-total">
+            <span class="order-total-label">Total</span>
+            <span class="order-total-value" id="order-total">R$ 0,00</span>
+          </div>
+          <div class="checkout-actions">
+            <button class="btn-ck-back" onclick="closeCheckout()">Cancelar</button>
+            <button class="btn-ck-next" onclick="goStep(2)">Continuar →</button>
+          </div>
+        </div>
+
+        <div class="checkout-panel" id="panel-2">
+          <p class="form-section-title">Dados Pessoais</p>
+          <div class="form-row">
+            <div class="field">
+              <label>Nome completo</label>
+              <input type="text" id="f-nome" placeholder="Seu nome">
+            </div>
+            <div class="field">
+              <label>E-mail</label>
+              <input type="email" id="f-email" placeholder="seu@email.com">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="field">
+              <label>Telefone</label>
+              <input type="text" id="f-tel" placeholder="(00) 00000-0000" maxlength="15">
+            </div>
+          </div>
+
+          <p class="form-section-title">Endereço de Entrega</p>
+          <div class="form-row">
+            <div class="field">
+              <label>CEP</label>
+              <input type="text" id="f-cep" placeholder="00000-000" maxlength="9">
+            </div>
+            <div class="field">
+              <label>Estado</label>
+              <input type="text" id="f-estado" placeholder="UF" maxlength="2">
+            </div>
+          </div>
+          <div class="form-row full">
+            <div class="field">
+              <label>Cidade</label>
+              <input type="text" id="f-cidade" placeholder="Sua cidade">
+            </div>
+          </div>
+          <div class="form-row trio">
+            <div class="field">
+              <label>Rua</label>
+              <input type="text" id="f-rua" placeholder="Logradouro">
+            </div>
+            <div class="field">
+              <label>Número</label>
+              <input type="text" id="f-num" placeholder="Nº">
+            </div>
+            <div class="field">
+              <label>Complemento</label>
+              <input type="text" id="f-comp" placeholder="Apto...">
+            </div>
+          </div>
+
+          <div class="checkout-actions">
+            <button class="btn-ck-back" onclick="goStep(1)">← Voltar</button>
+            <button class="btn-ck-next" onclick="validateStep2()">Continuar →</button>
+          </div>
+        </div>
+
+        <div class="checkout-panel" id="panel-3">
+        <p class="form-section-title">Finalizar com Mercado Pago</p>
+
+        <div class="pay-info show" style="margin-bottom: 24px; padding: 20px; border: 1px dashed var(--silver-light);">
+          <span style="font-size: 1.5rem;">🔒</span><br>
+          Você será levado ao ambiente seguro para escolher entre <strong>Pix, Cartão ou Boleto</strong>.<br>
+        </div>
+
+        <div class="checkout-actions">
+          <button class="btn-ck-back" onclick="goStep(2)">← Voltar</button>
+          <button class="btn-ck-next" onclick="finalizar()">Confirmar e Pagar</button>
+        </div>
+      </div>
+
+        <div class="checkout-panel" id="panel-4">
+          <div class="confirm-screen">
+            <div class="confirm-icon">✓</div>
+            <h3 class="confirm-title">Pedido <em>Confirmado</em></h3>
+            <p class="confirm-sub">Obrigada pela sua compra. Em breve você receberá um e-mail com os detalhes e o prazo de entrega.</p>
+            <div class="confirm-order-num" id="confirm-num">#SR-000000</div>
+            <p class="confirm-sub">Entrega estimada: <strong>5 a 10 dias úteis</strong></p>
+            <div class="checkout-actions" style="justify-content:center; margin-top:24px;">
+              <button class="btn-ck-next" onclick="closeCheckout()">Continuar navegando</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <a href="#" class="logo">
+      Serentti
+      <span>Minimal Jewelry</span>
+    </a>
+    <nav>
+      <a href="#produtos">Coleção</a>
+      <a href="#categorias">Categorias</a>
+      <a href="#sobre">Nossa Essência</a>
+    </nav>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="openCheckout()">
+        🛒 <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">ELEGÂNCIA MINIMALISTA</div>
+      <h1 class="hero-title">Beleza em cada detalhe</h1>
+      <p class="hero-desc">Descubra joias minimalistas em prata 925 que realçam sua beleza com sofisticação e simplicidade.</p>
+      <div class="hero-actions">
+        <a href="#produtos" class="btn-primary">Ver Coleção</a>
+        <a href="#sobre" class="btn-ghost">Saiba Mais</a>
+      </div>
+    </div>
+</section>
+
+  <div class="marquee-wrap">
+    <div class="marquee-content">
+      <span class="marquee-item">FRETE GRÁTIS EM COMPRAS ACIMA DE R$200</span>
+      <span class="marquee-item">PRATA 925 CERTIFICADA</span>
+      <span class="marquee-item">DESIGN EXCLUSIVO</span>
+      <span class="marquee-item">FEITO À MÃO NO BRASIL</span>
+      <span class="marquee-item">FRETE GRÁTIS EM COMPRAS ACIMA DE R$200</span>
+      <span class="marquee-item">PRATA 925 CERTIFICADA</span>
+      <span class="marquee-item">DESIGN EXCLUSIVO</span>
+      <span class="marquee-item">FEITO À MÃO NO BRASIL</span>
+    </div>
+    <div class="marquee-content" aria-hidden="true">
+      <span class="marquee-item">FRETE GRÁTIS EM COMPRAS ACIMA DE R$200</span>
+      <span class="marquee-item">PRATA 925 CERTIFICADA</span>
+      <span class="marquee-item">DESIGN EXCLUSIVO</span>
+      <span class="marquee-item">FEITO À MÃO NO BRASIL</span>
+      <span class="marquee-item">FRETE GRÁTIS EM COMPRAS ACIMA DE R$200</span>
+      <span class="marquee-item">PRATA 925 CERTIFICADA</span>
+      <span class="marquee-item">DESIGN EXCLUSIVO</span>
+      <span class="marquee-item">FEITO À MÃO NO BRASIL</span>
+    </div>
+  </div>
+
+  <section id="produtos">
+  <div class="section-label">Lançamentos</div>
+  <h2 class="section-title">Nossas Peças <em>Favoritas</em></h2>
+
+  <div class="products-grid">
+    <div class="product-card" data-name="Colar Feminino">
+      <div class="product-img-wrap">
+        <div class="swiper productSwiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="Images/ColarFeminino/col-fem-1.png" class="product-image" data-id="col-fem-1" data-price="189.00"></div>
+            <div class="swiper-slide"><img src="Images/ColarFeminino/col-fem-2.png" class="product-image" data-id="col-fem-2" data-price="199.00"></div>
+            <div class="swiper-slide"><img src="Images/ColarFeminino/col-fem-3.png" class="product-image" data-id="col-fem-3" data-price="209.00"></div>
+            <div class="swiper-slide"><img src="Images/ColarFeminino/col-fem-4.png" class="product-image" data-id="col-fem-4" data-price="179.00"></div>
+            <div class="swiper-slide"><img src="Images/ColarFeminino/col-fem-5.png" class="product-image" data-id="col-fem-5" data-price="159.00"></div>
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
+        </div>
+        <button class="overlay-btn" onclick="addToCart(this)">Adicionar</button>
+      </div>
+      <div class="product-info">
+        <h3 class="product-name">Colar Feminino</h3>
+        <p class="product-material">Prata 925 · Acabamento Polido</p>
+        <p class="product-price">R$ 189,00</p>
+      </div>
+    </div>
+
+    <div class="product-card" data-name="Pulseira Feminina">
+      <div class="product-img-wrap">
+        <div class="swiper productSwiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="Images/PulseiraFeminino/pul-fem-1.png" class="product-image" data-id="pul-fem-1" data-price="120.00"></div>
+            <div class="swiper-slide"><img src="Images/PulseiraFeminino/pul-fem-2.png" class="product-image" data-id="pul-fem-2" data-price="125.00"></div>
+            <div class="swiper-slide"><img src="Images/PulseiraFeminino/pul-fem-3.png" class="product-image" data-id="pul-fem-3" data-price="130.00"></div>
+            <div class="swiper-slide"><img src="Images/PulseiraFeminino/pul-fem-4.png" class="product-image" data-id="pul-fem-4" data-price="115.00"></div>
+            <div class="swiper-slide"><img src="Images/PulseiraFeminino/pul-fem-5.png" class="product-image" data-id="pul-fem-5" data-price="110.00"></div>
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
+        </div>
+        <button class="overlay-btn" onclick="addToCart(this)">Adicionar</button>
+      </div>
+      <div class="product-info">
+        <h3 class="product-name">Pulseira Feminina</h3>
+        <p class="product-material">Prata 925</p>
+        <p class="product-price">R$ 120,00</p>
+      </div>
+    </div>
+
+    <div class="product-card" data-name="Colar Masculino">
+      <div class="product-img-wrap">
+        <div class="swiper productSwiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="Images/ColarMasculino/col-masc-1.png" class="product-image" data-id="col-masc-1" data-price="89.00"></div>
+            <div class="swiper-slide"><img src="Images/ColarMasculino/col-masc-2.png" class="product-image" data-id="col-masc-2" data-price="95.00"></div>
+            <div class="swiper-slide"><img src="Images/ColarMasculino/col-masc-3.png" class="product-image" data-id="col-masc-3" data-price="99.00"></div>
+            <div class="swiper-slide"><img src="Images/ColarMasculino/col-masc-4.png" class="product-image" data-id="col-masc-4" data-price="85.00"></div>
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
+        </div>
+        <button class="overlay-btn" onclick="addToCart(this)">Adicionar</button>
+      </div>
+      <div class="product-info">
+        <h3 class="product-name">Colar Masculino</h3>
+        <p class="product-material">Zircônia Austríaca</p>
+        <p class="product-price">R$ 89,00</p>
+      </div>
+    </div>
+
+    <div class="product-card" data-name="Pulseira Masculina">
+      <div class="product-img-wrap">
+        <div class="swiper productSwiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="Images/PulseiraMasculino/pul-masc-1.png" class="product-image" data-id="pul-masc-1" data-price="99.00"></div>
+            <div class="swiper-slide"><img src="Images/PulseiraMasculino/pul-masc-2.jpeg" class="product-image" data-id="pul-masc-2" data-price="105.00"></div>
+            <div class="swiper-slide"><img src="Images/PulseiraMasculino/pul-masc-3.png" class="product-image" data-id="pul-masc-3" data-price="110.00"></div>
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-prev"></div>
+          <div class="swiper-button-next"></div>
+        </div>
+        <button class="overlay-btn disabled">Indisponível</button>
+      </div>
+      <div class="product-info">
+        <h3 class="product-name">Pulseira Masculina</h3>
+        <p class="product-material">Prata 925</p>
+        <p class="product-price">R$ 99,00</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <section id="categorias" style="background: var(--surface);">
+    <div class="section-label" style="text-align: center;">Coleções</div>
+    <h2 class="section-title" style="text-align: center;">Navegue por <em>estilo</em></h2>
+    <div class="categories-grid">
+      <a href="Colares.html#masculino" class="cat-card cat-1">
+        <div class="cat-image-wrap">
+          <img src="Images/ColarMasculino/col-masc-4.png" class="cat-image">
+        </div>
+        <span class="cat-title">Colares Masculinos</span>
+      </a>
+      <a href="Pulseiras.html" class="cat-card cat-2">
+        <div class="cat-image-wrap">
+          <img src="Images/PulseiraFeminino/pul-fem-5.png" class="cat-image">
+        </div>
+        <span class="cat-title">Pulseiras Femininas</span>
+      </a>
+      <a href="Colares.html" class="cat-card cat-3">
+        <div class="cat-image-wrap">
+          <img src="Images/ColarFeminino/col-fem-1.png" class="cat-image">
+        </div>
+        <span class="cat-title">Colares Femininos</span>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-top">
+      <div>
+        <a href="#" class="logo">Serentti</a>
+        <p style="color: var(--text-dim); margin-top: 20px; font-size: 0.8rem; line-height: 1.6;">
+          Acreditamos que a joia certa não grita, ela sussurra. <br>
+          Trabalhamos com materiais nobres e design limpo.
+        </p>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Loja</h4>
+        <ul>
+          <li><a href="#">Produtos</a></li>
+          <li><a href="#">Cuidado com as Peças</a></li>
+          <li><a href="#">Sobre a Prata</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Apoio</h4>
+        <ul>
+          <li><a href="devolucao.html">Trocas e Devoluções</a></li>
+          <li><a href="prazos.html">Envio e Prazos</a></li>
+          <li><a href="#">Contato</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="border-top: 1px solid var(--border); padding-top: 30px; font-size: 0.65rem; color: var(--text-dim); text-align: center; letter-spacing: 0.1em;">
+      © 2026 SERENTTI BIJOUX. DESIGN MINIMALISTA.
+    </div>
+  </footer>
+
+
+  <script>
+
+  // ── SWIPER ──
+  // ── SWIPER COM PREÇO DINÂMICO ──
+  function initProductCarousels() {
+    document.querySelectorAll('.productSwiper').forEach(function(el) {
+      if (el.swiper) return;
+
+      new Swiper(el, {
+        loop: true,
+        pagination: {
+          el: el.querySelector('.swiper-pagination'),
+          clickable: true,
+        },
+        navigation: {
+          nextEl: el.querySelector('.swiper-button-next'),
+          prevEl: el.querySelector('.swiper-button-prev'),
+        },
+        speed: 600,
+
+        // AQUI ESTÁ O SEGREDO:
+        on: {
+          slideChange: function () {
+            const swiper = this;
+            const card = swiper.el.closest('.product-card');
+
+            // 1. Acha a imagem que está aparecendo agora
+            const activeSlide = swiper.slides[swiper.activeIndex];
+            const activeImg = activeSlide.querySelector('.product-image');
+
+            if (activeImg) {
+              // 2. Pega o preço guardado no 'data-price' da imagem
+              const novoPreco = activeImg.getAttribute('data-price');
+              const campoTextoPreco = card.querySelector('.product-price');
+
+              // 3. Atualiza o texto visual (R$)
+              if (campoTextoPreco && novoPreco) {
+                const valorFormatado = parseFloat(novoPreco).toLocaleString('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+                });
+                campoTextoPreco.textContent = valorFormatado;
+              }
+            }
+          }
+        }
+      });
+    });
+  }
+
+  window.addEventListener('load', initProductCarousels);
+
+  window.addEventListener('load', () => {
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.get('openCart') === 'true') {
+    openCheckout();
+
+    // (opcional) limpa a URL depois
+    window.history.replaceState({}, document.title, "Serentti.html");
+  }
+});
+
+
+  function removeItem(index) {
+      cart.splice(index, 1); // remove do array
+      renderSummary();       // re-renderiza
+      updateCartCount();     // atualiza contador
+  }
+
+  const mp = new MercadoPago('TEST-19410f06-d345-4752-b77a-f26939cf8aa3', {
+    locale: 'pt-BR'
+  });
+
+  // ── CARRINHO ──
+let cart = JSON.parse(localStorage.getItem('serentti_cart')) || [];
+
+// E logo após as suas funções de atualizar o carrinho, adicione esta linha
+// para garantir que o contador da página principal também comece atualizado:
+updateCartCount();
+
+function addToCart(buttonElement) {
+    const card = buttonElement.closest('.product-card');
+    const swiperContainer = card.querySelector('.productSwiper');
+
+    // Acessa o slide que está visível no momento
+    const swiperInstance = swiperContainer.swiper;
+    const activeSlide = swiperInstance.slides[swiperInstance.activeIndex];
+    const activeImg = activeSlide.querySelector('.product-image');
+
+    // Coleta os dados do slide específico
+    const name = card.getAttribute('data-name');
+    const price = parseFloat(activeImg.getAttribute('data-price'));
+    const id = activeImg.getAttribute('data-id');
+    const image = activeImg.src;
+    const material = card.querySelector('.product-material').textContent;
+
+    // Lógica do Carrinho
+    const existing = cart.find(item => item.id === id);
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        cart.push({ id, name, price, qty: 1, image, material });
+    }
+
+    // Salva e atualiza contador
+    localStorage.setItem('serentti_cart', JSON.stringify(cart));
+    if (typeof updateCartCount === "function") updateCartCount();
+    if (typeof updateCartDisplay === "function") updateCartDisplay();
+
+    // Efeito de sucesso no botão
+    buttonElement.textContent = "✓ Adicionado";
+    buttonElement.classList.add('added');
+    setTimeout(() => {
+        buttonElement.textContent = "Adicionar";
+        buttonElement.classList.remove('added');
+    }, 2000);
+}
+
+// 2. Sincronizar o texto do preço com o slide (Opcional, mas melhora muito a experiência)
+document.querySelectorAll('.productSwiper').forEach(s => {
+    if (s.swiper) {
+        s.swiper.on('slideChange', function () {
+            const card = this.el.closest('.product-card');
+            const activeSlide = this.slides[this.activeIndex];
+            const activeImg = activeSlide.querySelector('.product-image');
+            const newPrice = activeImg.getAttribute('data-price');
+
+            const priceDisplay = card.querySelector('.product-price');
+            if (priceDisplay) {
+                priceDisplay.textContent = `R$ ${parseFloat(newPrice).toFixed(2).replace('.', ',')}`;
+            }
+        });
+    }
+});
+
+
+  function updateCartCount() {
+    const countElement = document.getElementById('cart-count');
+    if (countElement) {
+        const totalItems = cart.reduce((sum, item) => sum + (parseInt(item.qty) || 1), 0);
+        countElement.textContent = totalItems;
+    }
+    // Adicione esta linha abaixo para salvar sempre que o contador mudar:
+    localStorage.setItem('serentti_cart', JSON.stringify(cart));
+}
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+
+  // ── CHECKOUT ──
+  let payMethod = 'cartao';
+
+  function openCheckout() {
+    if (cart.length === 0) {
+      showToast('Adicione itens ao carrinho primeiro.');
+      return;
+    }
+    renderSummary();
+    goStep(1);
+    document.getElementById('checkout-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCheckout() {
+    document.getElementById('checkout-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function renderSummary() {
+  const list = document.getElementById('order-list');
+  if (!list) return;
+
+  let total = 0;
+
+  list.innerHTML = cart.map((item, index) => {
+    const price = parseFloat(item.price) || 0;
+    const qty = parseInt(item.qty) || 1;
+    const name = item.name || "Produto";
+    const material = item.material || "Prata 925";
+    const image = item.image || "https://via.placeholder.com/80";
+
+    const subtotal = price * qty;
+    total += subtotal;
+
+    return `
+      <div class="order-item">
+        <div class="order-item-img">
+          <img src="${image}" style="width:100%; height:100%; object-fit:cover;">
+        </div>
+        <div>
+          <div class="order-item-name">${name} (x${qty})</div>
+          <div class="order-item-material">${material}</div>
+        </div>
+        <div class="order-item-price">R$ ${subtotal.toFixed(2).replace('.', ',')}</div>
+        <button class="remove-item" onclick="removeItem(${index})">🗑️</button>
+      </div>
+    `;
+  }).join('');
+
+  function calcularFrete(total) {
+      if (total >= 200) return 0;
+      if (total >= 100) return 12.9;
+      return 18.9;
+    }
+
+const frete = calcularFrete(total);
+const freteLabel = frete === 0 ? 'Grátis' : `R$ ${frete.toFixed(2).replace('.',',')}`;
+
+  list.innerHTML += `
+    <div class="order-item">
+      <div class="order-item-img">📦</div>
+      <div>
+        <div class="order-item-name">Frete</div>
+        <div class="order-item-material">Correios PAC</div>
+      </div>
+      <div class="order-item-price">${freteLabel}</div>
+    </div>
+  `;
+
+  total += frete;
+
+  document.getElementById('order-total').textContent =
+    `R$ ${total.toFixed(2).replace('.',',')}`;
+}
+
+
+  // ── STEPS ──
+  function goStep(n) {
+    [1,2,3,4].forEach(i => {
+      const s = document.getElementById(`step-${i}`);
+      const p = document.getElementById(`panel-${i}`);
+
+      if (p) p.classList.toggle('active', i === n);
+      if (s) s.classList.toggle('active', i === n);
+    });
+
+    const bar = document.getElementById('progress-bar');
+    if (bar) {
+      const percent = n === 4 ? 100 : (n / 3) * 100;
+      bar.style.width = percent + '%';
+    }
+  }
+
+  function validateStep2() {
+    const nome = document.getElementById('f-nome').value;
+    const email = document.getElementById('f-email').value;
+
+    if (!nome || !email) {
+      alert('Preencha os campos obrigatórios.');
+      return;
+    }
+
+    goStep(3);
+  }
+
+
+  // ── PAGAMENTO ──
+  function selectPay(el, method) {
+    document.querySelectorAll('.pay-option')
+      .forEach(opt => opt.classList.remove('selected'));
+
+    el.classList.add('selected');
+    payMethod = method;
+
+    document.getElementById('fields-cartao').style.display =
+      (method === 'cartao') ? 'block' : 'none';
+
+    document.getElementById('info-pix')
+      .classList.toggle('show', method === 'pix');
+
+    document.getElementById('info-boleto')
+      .classList.toggle('show', method === 'boleto');
+  }
+
+
+// ── FINALIZAR (VERSÃO CORRIGIDA E SEGURA) ──
+async function finalizar() {
+  try {
+    // 1. Coleta os dados de entrega com os IDs CORRETOS (f- na frente)
+    const customer = {
+      name: document.getElementById('f-nome')?.value || "Cliente Serentti",
+      email: document.getElementById('f-email')?.value || "",
+      phone: document.getElementById('f-tel')?.value || ""
+    };
+
+    const address = {
+      street: document.getElementById('f-rua')?.value || "",
+      number: document.getElementById('f-num')?.value || "",
+      city: document.getElementById('f-cidade')?.value || "",
+      state: document.getElementById('f-estado')?.value || "",
+      zip: document.getElementById('f-cep')?.value || ""
+    };
+
+    // 2. Prepara os itens do carrinho (Certifique-se de que a estrutura está correta)
+    const itensParaPagamento = cart.map(item => ({
+      id: item.id,
+      title: item.name,
+      unit_price: Number(item.price),
+      quantity: Number(item.qty) || 1,
+      currency_id: "BRL",
+      picture_url: item.image 
+    }));
+
+    // 3. Calcula o frete para bater com o total visual
+    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    const valorFrete = subtotal >= 200 ? 0 : (subtotal >= 100 ? 12.9 : 18.9);
+
+    if (valorFrete > 0) {
+      itensParaPagamento.push({
+        title: "Frete (Correios)",
+        unit_price: valorFrete,
+        quantity: 1,
+        currency_id: "BRL"
+      });
+    }
+
+    // 4. Envio para o backend
+    const response = await fetch("https://serentti-backend.onrender.com/create_preference", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        items: itensParaPagamento,
+        customer: customer,
+        address: address
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.id) {
+      window.location.href = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${data.id}`;
+    } else {
+      throw new Error("ID de preferência não retornado.");
+    }
+
+  } catch (error) {
+    console.error("Erro no checkout:", error);
+    alert("Houve um problema ao gerar o pagamento. Por favor, preencha todos os campos de entrega.");
+  }
+}
+
+  // ── FORMATAÇÃO ──
+  function fmtCard(i) {
+    i.value = i.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim();
+  }
+
+  function fmtVal(i) {
+    i.value = i.value.replace(/\D/g,'').replace(/(\d{2})(\d)/,'$1/$2');
+  }
+
+
+</script>
