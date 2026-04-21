@@ -85,9 +85,9 @@
   <div id="toast">Adicionado ao carrinho!</div>
 
   <header>
-    <a href="Serentti.html" class="logo">Serentti<span>Minimal Jewelry</span></a>
+    <a href="index.html" class="logo">Serentti<span>Minimal Jewelry</span></a>
     <nav>
-      <a href="Serentti.html?openCart=true" class="cart-status">CARRINHO <span id="cart-count">0</span></a>
+      <a href="index.html?openCart=true" class="cart-status">CARRINHO <span id="cart-count">0</span></a>
     </nav>
   </header>
 
@@ -218,7 +218,7 @@
     }
 
     function addToCart(id, name, price, material, image) {
-      // Busca pelo ID exato para garantir o agrupamento (id deve ser igual ao da Serentti.html)
+      // Busca pelo ID exato para garantir o agrupamento (id deve ser igual ao da index.html)
       const existing = cart.find(item => item.id === id);
 
       if (existing) {
