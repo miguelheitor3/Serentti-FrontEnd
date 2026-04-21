@@ -21,6 +21,20 @@
       --border: rgba(0,0,0,0.06);
     }
 
+   /* --- PRODUTOS (Grade padrão) --- */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 30px;
+      padding: 20px;
+    }
+
+    .product-card {
+      position: relative;
+      background: #fff;
+      overflow: hidden;
+    }
+   
     /* --- SETAS DE NAVEGAÇÃO --- */
     .product-card .swiper-button-next,
     .product-card .swiper-button-prev {
