@@ -22,11 +22,19 @@
     }
 
    /* --- PRODUTOS (Grade padrão) --- */
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 30px;
-      padding: 20px;
+    .products-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+      gap: 30px; 
+    }
+
+   /* Adicione este trecho para forçar 2 colunas no celular */
+    @media (max-width: 768px) {
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        padding: 10px !important;
+      }
     }
 
     .product-card {
@@ -219,26 +227,27 @@
       font-size: 0.6rem; border-radius: 50%;
       width: 18px; height: 18px; display: inline-flex; align-items: center; justify-content: center;
     }
-
-    .hero {
-      min-height: 85vh;
-      display: flex;
-      align-items: center;
-      position: relative;
-      overflow: hidden;
-      padding: 0 10%;
-
-      background-image:
-        linear-gradient(to right, #ffffff 15%, rgba(255,255,255,0.0) 55%),
-        url('Images/Hero/Hero.png');
-
-      background-repeat: no-repeat;
-      background-position: right center;
-
-      /* 🔥 AQUI ESTÁ O SEGREDO */
-      background-size: cover;
+   
+    @media (max-width: 768px) {
+      .hero {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        padding: 0 10%;
+  
+        background-image:
+          linear-gradient(to right, #ffffff 15%, rgba(255,255,255,0.0) 55%),
+          url('Images/Hero/Hero.png');
+  
+        background-repeat: no-repeat;
+        background-position: right center;
+  
+        /* 🔥 AQUI ESTÁ O SEGREDO */
+        background-size: cover;
+      }
     }
-
     .hero-content {
       max-width: 450px;
       z-index: 2;
