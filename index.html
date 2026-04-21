@@ -10,7 +10,25 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /*setas */
+    :root {
+      --bg: #ffffff;
+      --surface: #f7f7f7;
+      --surface2: #efefef;
+      --accent: #1a1a1a;
+      --silver: #999999;
+      --silver-light: #d1d1d1;
+      --text: #222222;
+      --text-dim: #777777;
+      --border: rgba(0,0,0,0.06);
+      --shadow-soft: 0 10px 40px rgba(0,0,0,0.04);
+    }
+
+    /* --- CARROSSEL E SETAS --- */
+    .productSwiper {
+      width: 100%;
+      height: 100%;
+    }
+
     .product-card .swiper-button-next,
     .product-card .swiper-button-prev {
       color: white;
@@ -19,46 +37,74 @@
       height: 32px;
       border-radius: 50%;
       backdrop-filter: blur(4px);
-      opacity: 0;
+      opacity: 0; /* Invisível no PC por padrão */
       transition: 0.3s;
     }
 
-.overlay-btn.disabled {
-  background: #999;
-  cursor: not-allowed;
-  opacity: 0.0;
-}
-    /* aparece só no hover */
+    /* Aparece no hover (PC) */
     .product-card:hover .swiper-button-next,
     .product-card:hover .swiper-button-prev {
       opacity: 1;
     }
 
-    /* tamanho da seta */
     .product-card .swiper-button-next::after,
     .product-card .swiper-button-prev::after {
       font-size: 12px;
     }
 
-    /* Container do carrossel ocupa toda a área da imagem */
-    .productSwiper {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Add Animation */
-    .overlay-btn.added {
-      background-color: #27ae60 !important; /* Verde suave de sucesso */
-      transform: translateX(-50%) scale(0.95); /* Efeito de 'pressionar' */
-      pointer-events: none; /* Evita cliques duplos durante a animação */
-    }
-
-    /* Transição suave para todas as propriedades */
+    /* --- BOTÃO ADICIONAR --- */
     .overlay-btn {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0;
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      z-index: 10;
     }
 
-    /* Lixeira Checkout */
+    /* Comportamento no PC */
+    .product-card:hover .overlay-btn {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .overlay-btn.added {
+      background-color: #27ae60 !important;
+      transform: translateX(-50%) scale(0.95);
+      pointer-events: none;
+    }
+
+    .overlay-btn.disabled {
+      background: #999;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    /* --- PAGINAÇÃO (BOLINHAS) --- */
+    .product-card .swiper-pagination-bullet {
+      background: var(--silver-light);
+      opacity: 1;
+      width: 6px;
+      height: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .product-card .swiper-pagination-bullet-active {
+      background: var(--accent);
+      width: 18px;
+      border-radius: 4px;
+    }
+
+    /* --- LIXEIRA CHECKOUT --- */
     .remove-item {
       background: none;
       border: none;
@@ -74,37 +120,32 @@
       transform: scale(1.2);
     }
 
-    /* Estilo das Bolinhas (Pagination) */
-    .product-card .swiper-pagination-bullet {
-      background: var(--silver-light);
-      opacity: 1;
-      width: 6px;
-      height: 6px;
-      transition: all 0.3s ease;
-    }
+    /* ══════════════════════════════════════════
+       AJUSTES EXCLUSIVOS PARA CELULAR (TOUCH)
+    ═══════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      /* 1. Forçar setas a ficarem sempre visíveis */
+      .product-card .swiper-button-next,
+      .product-card .swiper-button-prev {
+        opacity: 1 !important;
+        background: rgba(255, 255, 255, 0.8);
+        color: #000;
+      }
 
-    .product-card .swiper-pagination-bullet-active {
-      background: var(--accent);
-      width: 18px; /* Efeito pílula minimalista */
-      border-radius: 4px;
-    }
+      /* 2. Botão Adicionar sempre visível e maior para o dedo */
+      .overlay-btn {
+        opacity: 1 !important;
+        transform: translateX(-50%) translateY(0) !important;
+        bottom: 15px;
+        width: 85%;
+        padding: 12px;
+        font-weight: 500;
+      }
 
-    /* Garante que o botão 'Adicionar' fique acima do carrossel */
-    .overlay-btn {
-      z-index: 10;
-    }
-
-    :root {
-      --bg: #ffffff;
-      --surface: #f7f7f7;
-      --surface2: #efefef;
-      --accent: #1a1a1a;
-      --silver: #999999;
-      --silver-light: #d1d1d1;
-      --text: #222222;
-      --text-dim: #777777;
-      --border: rgba(0,0,0,0.06);
-      --shadow-soft: 0 10px 40px rgba(0,0,0,0.04);
+      /* 3. Aumentar área da imagem para não sufocar o botão */
+      .product-img-wrap {
+        aspect-ratio: 1 / 1.15;
+      }
     }
 
     html { scroll-behavior: smooth; }
