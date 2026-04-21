@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trocas e Devoluções – Serentti</title>
+
+  <!-- FONTES -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond&family=Jost&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --accent: #1a1a1a;
+      --text: #222;
+      --text-dim: #777;
+      --border: rgba(0,0,0,0.06);
+    }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: #ffffff;
+      color: var(--text);
+      padding: 120px 24px 60px; /* 🔥 espaço pro header fixo */
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 48px;
+      background: rgba(255,255,255,0.98);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.7rem;
+      letter-spacing: 0.15em;
+      text-decoration: none;
+      color: var(--accent);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo span {
+      font-size: 0.55rem;
+      letter-spacing: 0.4em;
+      color: var(--text-dim);
+    }
+
+    nav {
+      display: flex;
+      gap: 40px;
+    }
+
+    nav a {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--text-dim);
+    }
+
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    /* ── CONTEÚDO ── */
+    .container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+    }
+
+    .desc {
+      color: var(--text-dim);
+      margin-bottom: 40px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .field label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      color: var(--text-dim);
+    }
+
+    .field input, .field textarea {
+      border: 1px solid #ddd;
+      padding: 12px;
+      font-family: 'Jost';
+      outline: none;
+    }
+
+    .field input:focus, .field textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      opacity: 0.85;
+    }
+
+    .back {
+      display: inline-block;
+      margin-bottom: 30px;
+      text-decoration: none;
+      color: var(--text-dim);
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 15px 24px;
+      }
+
+      nav {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- 🔥 HEADER IGUAL AO SITE -->
+  <header>
+    <a href="Serentti.html" class="logo">
+      Serentti
+      <span>Minimal Jewelry</span>
+    </a>
+
+    <nav>
+      <a href="Serentti.html#produtos">Coleção</a>
+      <a href="Serentti.html#categorias">Categorias</a>
+      <a href="Serentti.html#sobre">Nossa Essência</a>
+    </nav>
+  </header>
+
+  <!-- CONTEÚDO -->
+  <div class="container">
+
+    <a href="Serentti.html" class="back">← Voltar para loja</a>
+
+    <h1>Trocas & Devoluções</h1>
+    <p class="desc">
+      Preencha os dados abaixo e nossa equipe entrará em contato com você o mais breve possível.
+    </p>
+
+    <form>
+      <div class="field">
+        <label>Nome completo</label>
+        <input type="text" required>
+      </div>
+
+      <div class="field">
+        <label>E-mail</label>
+        <input type="email" required>
+      </div>
+
+      <div class="field">
+        <label>Número do pedido</label>
+        <input type="text" required>
+      </div>
+
+      <div class="field">
+        <label>Motivo</label>
+        <textarea rows="4"></textarea>
+      </div>
+
+      <button class="btn">Enviar Solicitação</button>
+    </form>
+
+  </div>
+
+</body>
+</html>
