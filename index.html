@@ -7,10 +7,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Serentti Bijoux – Minimalista & Prata</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet"/>
-  <style>
+ <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /*setas */
+    :root {
+      --bg: #ffffff;
+      --surface: #f7f7f7;
+      --accent: #1a1a1a;
+      --silver: #999999;
+      --silver-light: #d1d1d1;
+      --text: #222222;
+      --text-dim: #777777;
+      --border: rgba(0,0,0,0.06);
+    }
+
+    /* --- SETAS DE NAVEGAÇÃO --- */
     .product-card .swiper-button-next,
     .product-card .swiper-button-prev {
       color: white;
@@ -23,50 +34,92 @@
       transition: 0.3s;
     }
 
-.overlay-btn.disabled {
-  background: #999;
-  cursor: not-allowed;
-  opacity: 0.0;
-}
-    /* aparece só no hover */
+    /* Aparecem no Hover (PC) */
     .product-card:hover .swiper-button-next,
     .product-card:hover .swiper-button-prev {
       opacity: 1;
     }
 
-    /* tamanho da seta */
     .product-card .swiper-button-next::after,
     .product-card .swiper-button-prev::after {
       font-size: 12px;
     }
 
-    /* Container do carrossel ocupa toda a área da imagem */
-    .productSwiper {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* Add Animation */
-    .overlay-btn.added {
-      background-color: #27ae60 !important; /* Verde suave de sucesso */
-      transform: translateX(-50%) scale(0.95); /* Efeito de 'pressionar' */
-      pointer-events: none; /* Evita cliques duplos durante a animação */
-    }
-
-    /* Transição suave para todas as propriedades */
+    /* --- BOTÃO ADICIONAR (PADRÃO PC) --- */
     .overlay-btn {
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0;
+      z-index: 10;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
 
-    /* Lixeira Checkout */
+    .product-card:hover .overlay-btn {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .overlay-btn.added {
+      background-color: #27ae60 !important;
+      opacity: 1 !important;
+    }
+
+    /* --- AJUSTES PARA CELULAR (MOBILE) --- */
+    @media (max-width: 1024px) {
+      /* Setas visíveis no mobile para ajudar a navegação */
+      .product-card .swiper-button-next,
+      .product-card .swiper-button-prev {
+        opacity: 1 !important;
+      }
+
+      /* Botão Adicionar: Largura menor e sempre visível */
+      .overlay-btn {
+        opacity: 1 !important;
+        transform: translateX(-50%) translateY(0) !important;
+        width: auto; /* Deixa ele do tamanho do texto */
+        min-width: 140px; /* Mas garante um tamanho mínimo confortável para o dedo */
+        padding: 10px 15px;
+        bottom: 15px;
+        font-size: 0.65rem;
+      }
+      
+      /* Ajuste das bolinhas para não ficarem embaixo do botão */
+      .product-card .swiper-pagination {
+        bottom: 5px !important;
+      }
+    }
+
+    /* --- OUTROS ESTILOS --- */
+    .productSwiper { width: 100%; height: 100%; }
+
+    .product-card .swiper-pagination-bullet {
+      background: var(--silver-light);
+      opacity: 1;
+      width: 6px;
+      height: 6px;
+    }
+
+    .product-card .swiper-pagination-bullet-active {
+      background: var(--accent);
+      width: 16px;
+      border-radius: 4px;
+    }
+
     .remove-item {
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1rem;
-      margin-left: 10px;
       color: var(--text-dim);
-      transition: 0.2s;
     }
 
     .remove-item:hover {
