@@ -690,12 +690,17 @@
               <input type="email" id="f-email" placeholder="seu@email.com">
             </div>
           </div>
-          <div class="form-row full">
-            <div class="field">
-              <label>Telefone</label>
-              <input type="text" id="f-tel" placeholder="(00) 00000-0000" maxlength="15">
+          <div class="form-row">
+              <div class="field">
+                <label>Telefone</label>
+                <input type="text" id="f-tel" placeholder="(00) 00000-0000" maxlength="15">
+              </div>
+
+              <div class="field">
+                <label>CPF</label>
+                <input type="text" id="f-cpf" placeholder="000.000.000-00" maxlength="14">
+              </div>
             </div>
-          </div>
 
           <p class="form-section-title">Endereço de Entrega</p>
           <div class="form-row">
@@ -708,12 +713,17 @@
               <input type="text" id="f-estado" placeholder="UF" maxlength="2">
             </div>
           </div>
-          <div class="form-row full">
-            <div class="field">
-              <label>Cidade</label>
-              <input type="text" id="f-cidade" placeholder="Sua cidade">
+          <div class="form-row">
+              <div class="field">
+                <label>Cidade</label>
+                <input type="text" id="f-cidade" placeholder="Sua cidade">
+              </div>
+
+              <div class="field">
+                <label>Bairro</label>
+                <input type="text" id="f-bairro" placeholder="Bairro">
+              </div>
             </div>
-          </div>
           <div class="form-row trio">
             <div class="field">
               <label>Rua</label>
@@ -1221,53 +1231,65 @@ const freteLabel = frete === 0 ? 'Grátis' : `R$ ${frete.toFixed(2).replace('.',
   }
 
   function validateStep2() {
-  const campos = [
-    'f-nome',
-    'f-email',
-    'f-tel',
-    'f-cep',
-    'f-estado',
-    'f-cidade',
-    'f-rua',
-    'f-num'
-  ];
+      const campos = [
+        'f-nome',
+        'f-email',
+        'f-tel',
+        'f-cpf',
+        'f-cep',
+        'f-estado',
+        'f-cidade',
+        'f-bairro',
+        'f-rua',
+        'f-num'
+      ];
 
-  let erro = false;
+      let erro = false;
 
-  campos.forEach(id => {
-    const campo = document.getElementById(id);
-    if (!campo.value.trim()) {
-      campo.style.border = '1px solid red';
-      erro = true;
-    } else {
-      campo.style.border = '';
+      campos.forEach(id => {
+        const campo = document.getElementById(id);
+        if (!campo.value.trim()) {
+          campo.style.border = '1px solid red';
+          erro = true;
+        } else {
+          campo.style.border = '';
+        }
+      });
+
+      const email = document.getElementById('f-email').value;
+      const tel = document.getElementById('f-tel').value;
+      const cpf = document.getElementById('f-cpf').value;
+
+      // 🔴 EMAIL
+      if (!isValidEmail(email)) {
+        alert('Digite um e-mail válido.');
+        document.getElementById('f-email').style.border = '1px solid red';
+        return;
+      }
+
+      // 🔴 TELEFONE
+      if (!isValidPhone(tel)) {
+        alert('Digite um telefone válido com DDD.');
+        document.getElementById('f-tel').style.border = '1px solid red';
+        return;
+      }
+
+      // 🔴 CPF (AQUI É O PASSO 6)
+      if (!isValidCPF(cpf)) {
+        alert('Digite um CPF válido.');
+        document.getElementById('f-cpf').style.border = '1px solid red';
+        return;
+      }
+
+      // 🔴 CAMPOS VAZIOS
+      if (erro) {
+        alert('Preencha TODOS os campos obrigatórios.');
+        return;
+      }
+
+      // ✅ tudo certo
+      goStep(3);
     }
-  });
-
-  const email = document.getElementById('f-email').value;
-  const tel = document.getElementById('f-tel').value;
-
-  // 🔴 valida email
-  if (!isValidEmail(email)) {
-    alert('Digite um e-mail válido.');
-    document.getElementById('f-email').style.border = '1px solid red';
-    return;
-  }
-
-  // 🔴 valida telefone
-  if (!isValidPhone(tel)) {
-    alert('Digite um telefone válido com DDD.');
-    document.getElementById('f-tel').style.border = '1px solid red';
-    return;
-  }
-
-  if (erro) {
-    alert('Preencha TODOS os campos obrigatórios.');
-    return;
-  }
-
-  goStep(3);
-}
 
 
   // ── PAGAMENTO ──
@@ -1306,6 +1328,7 @@ document.getElementById('f-cep').addEventListener('blur', async function () {
     document.getElementById('f-rua').value = data.logradouro || '';
     document.getElementById('f-cidade').value = data.localidade || '';
     document.getElementById('f-estado').value = data.uf || '';
+    document.getElementById('f-bairro').value = data.bairro || '';
 
   } catch (e) {
     console.error(e);
@@ -1342,6 +1365,44 @@ function isValidPhone(phone) {
   const cleaned = phone.replace(/\D/g, '');
   return cleaned.length >= 10 && cleaned.length <= 11;
 }
+
+
+//validar cpf
+function isValidCPF(cpf) {
+  cpf = cpf.replace(/\D/g, '');
+
+  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+
+  let sum = 0;
+  let rest;
+
+  for (let i = 1; i <= 9; i++)
+    sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
+
+  rest = (sum * 10) % 11;
+  if (rest === 10 || rest === 11) rest = 0;
+  if (rest !== parseInt(cpf.substring(9, 10))) return false;
+
+  sum = 0;
+  for (let i = 1; i <= 10; i++)
+    sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
+
+  rest = (sum * 10) % 11;
+  if (rest === 10 || rest === 11) rest = 0;
+
+  return rest === parseInt(cpf.substring(10, 11));
+}
+
+// máscara cpf
+
+document.getElementById('f-cpf').addEventListener('input', function () {
+  this.value = this.value
+    .replace(/\D/g, '')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+    .slice(0, 14);
+});
 
 // ── FINALIZAR (VERSÃO CORRIGIDA E SEGURA) ──
 async function finalizar() {
