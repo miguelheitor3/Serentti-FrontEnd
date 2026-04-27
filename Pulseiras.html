@@ -78,6 +78,23 @@
       .catalog-container { padding: 40px 24px; }
       .zoom-lens { display: none !important; }
     }
+
+    /* Estilo para Produto Esgotado */
+    .product-card.sold-out {
+      opacity: 0.7;
+      pointer-events: none; /* Impede cliques no card */
+    }
+    
+    .product-card.sold-out .product-img-wrap {
+      filter: grayscale(1); /* Deixa a imagem em preto e branco */
+    }
+    
+    .product-card.sold-out .add-btn {
+      background: #ebebeb !important;
+      color: #999 !important;
+      border-color: #ddd !important;
+      cursor: not-allowed;
+    }
   </style>
 </head>
 <body>
@@ -175,7 +192,8 @@
             <h3 class="product-name">Pulseira Titan</h3>
             <p class="product-material">Zircônia Austríaca</p>
             <p class="product-price">R$ 79,00</p>
-            <button class="add-btn" onclick="addToCart('pul-masc-2', 'Pulseira Titan', 79, 'Zircônia Austríaca', 'Images/PulseiraMasculino/pul-masc-2.jpeg')">Adicionar</button>
+            <button class="add-btn" disabled>Esgotado</button>
+            // <button class="add-btn" onclick="addToCart('pul-masc-2', 'Pulseira Titan', 79, 'Zircônia Austríaca', 'Images/PulseiraMasculino/pul-masc-2.jpeg')">Adicionar</button>
           </div>
         </div>
 
