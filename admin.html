@@ -23,65 +23,93 @@
         </div>
     </div>
 
-    <script>
-        const API_URL = "https://serentti-backend.onrender.com";
+    <!-- ... (mantenha o seu <style> anterior e adicione/ajuste estas classes abaixo) ... -->
+<style>
+    .item-estoque { 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 15px; 
+        border-bottom: 1px solid #eee; 
+    }
+    .produto-info-wrap {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .thumb-admin {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+        background: #f0f0f0;
+    }
+    .id-texto {
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+</style>
 
-        // Lista oficial de IDs da Serentti para o primeiro cadastro
-        const idsProdutos = [
-            "col-fem-1", "col-fem-2", "col-fem-3", "col-fem-4", "col-fem-5",
-            "pul-fem-1", "pul-fem-2", "pul-fem-3", "pul-fem-4", "pul-fem-5",
-            "col-masc-1", "col-masc-2", "col-masc-3", "col-masc-4",
-            "pul-masc-1", "pul-masc-2", "pul-masc-3"
-        ];
+<!-- ... no seu <script> ... -->
 
-        async function carregarEstoque() {
-            try {
-                const res = await fetch(`${API_URL}/consultar-estoque`);
-                const estoqueReal = await res.json();
+<script>
+    const API_URL = "https://serentti-backend.onrender.com";
+
+    // Mapeamento de pastas baseado no ID para facilitar a busca das fotos
+    const idsProdutos = [
+        "col-fem-1", "col-fem-2", "col-fem-3", "col-fem-4", "col-fem-5",
+        "pul-fem-1", "pul-fem-2", "pul-fem-3", "pul-fem-4", "pul-fem-5",
+        "col-masc-1", "col-masc-2", "col-masc-3", "col-masc-4",
+        "pul-masc-1", "pul-masc-2", "pul-masc-3"
+    ];
+
+    // Função para descobrir o caminho da imagem baseado no prefixo do ID
+    function getCaminhoFoto(id) {
+        if (id.startsWith('col-fem')) return `Images/ColarFeminino/${id}.png`;
+        if (id.startsWith('pul-fem')) {
+            // No seu HTML, a primeira pulseira feminina é .jpeg
+            return id === 'pul-fem-1' ? `Images/PulseiraFeminino/${id}.jpeg` : `Images/PulseiraFeminino/${id}.png`;
+        }
+        if (id.startsWith('col-masc')) return `Images/ColarMasculino/${id}.png`;
+        if (id.startsWith('pul-masc')) {
+            // A segunda pulseira masculina também é .jpeg[cite: 7]
+            return id === 'pul-masc-2' ? `Images/PulseiraMasculino/${id}.jpeg` : `Images/PulseiraMasculino/${id}.png`;
+        }
+        return '';
+    }
+
+    async function carregarEstoque() {
+        try {
+            const res = await fetch(`${API_URL}/consultar-estoque`);
+            const estoqueReal = await res.json();
+            
+            const lista = document.getElementById('lista-estoque');
+            lista.innerHTML = "";
+
+            idsProdutos.forEach(id => {
+                const qtd = estoqueReal[id] !== undefined ? estoqueReal[id] : 0;
+                const fotoPath = getCaminhoFoto(id); // Pega o caminho da foto[cite: 7]
                 
-                const lista = document.getElementById('lista-estoque');
-                lista.innerHTML = "";
-
-                // Percorremos nossa lista oficial. Se o ID já existir no banco, usamos o valor de lá. 
-                // Se não existir (estiver vazio), mostramos 0.
-                idsProdutos.forEach(id => {
-                    const qtd = estoqueReal[id] !== undefined ? estoqueReal[id] : 0;
-                    
-                    lista.innerHTML += `
-                        <div class="item-estoque">
-                            <span><strong>${id}</strong></span>
-                            <div>
-                                <input type="number" id="input-${id}" value="${qtd}">
-                                <button onclick="salvar('${id}')">Salvar</button>
-                            </div>
+                lista.innerHTML += `
+                    <div class="item-estoque">
+                        <div class="produto-info-wrap">
+                            <img src="${fotoPath}" class="thumb-admin" onerror="this.src='https://via.placeholder.com/50?text=S'">
+                            <span class="id-texto">${id}</span>
                         </div>
-                    `;
-                });
-            } catch (err) {
-                document.getElementById('lista-estoque').innerHTML = "<p style='color:red; text-align:center;'>Erro ao conectar com o servidor.</p>";
-            }
+                        <div>
+                            <input type="number" id="input-${id}" value="${qtd}">
+                            <button onclick="salvar('${id}')">Salvar</button>
+                        </div>
+                    </div>
+                `;
+            });
+        } catch (err) {
+            document.getElementById('lista-estoque').innerHTML = "<p style='color:red;'>Erro ao carregar dados.</p>";
         }
-
-        async function salvar(id) {
-            const qtd = document.getElementById(`input-${id}`).value;
-            try {
-                const res = await fetch(`${API_URL}/atualizar-estoque`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id, quantidade: qtd })
-                });
-
-                if (res.ok) {
-                    alert(`Produto ${id} atualizado com sucesso!`);
-                } else {
-                    alert("Erro ao salvar no banco de dados.");
-                }
-            } catch (err) {
-                alert("Erro de conexão com o servidor.");
-            }
-        }
-
-        carregarEstoque();
-    </script>
+    }
+    
+    // ... manter a função salvar() igual ...
+    carregarEstoque();
+</script>
 </body>
 </html>
