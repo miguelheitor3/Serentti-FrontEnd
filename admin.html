@@ -5,55 +5,80 @@
     <title>Admin Serentti - Gestão de Estoque</title>
     <style>
         body { font-family: 'Jost', sans-serif; padding: 40px; background: #f4f4f4; }
-        .container { max-width: 600px; background: white; padding: 20px; border-radius: 8px; margin: auto; }
-        .item-estoque { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        input { width: 60px; padding: 5px; text-align: center; }
-        button { background: #1a1a1a; color: white; border: none; padding: 8px 15px; cursor: pointer; }
-        .status { color: green; font-size: 0.8rem; display: none; }
+        .container { max-width: 600px; background: white; padding: 20px; border-radius: 8px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { text-align: center; letter-spacing: 2px; font-weight: 300; }
+        .item-estoque { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .item-estoque:last-child { border-bottom: none; }
+        input { width: 70px; padding: 8px; text-align: center; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #1a1a1a; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; transition: 0.3s; }
+        button:hover { background: #444; }
+        .loading { text-align: center; color: #888; padding: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Gestão de Estoque - Serentti</h2>
+        <h2>SERENTTI - ESTOQUE</h2>
         <div id="lista-estoque">
-            <!-- Os produtos aparecerão aqui via JS -->
+            <p class="loading">Carregando estoque...</p>
         </div>
     </div>
 
     <script>
         const API_URL = "https://serentti-backend.onrender.com";
 
-        // 1. Busca o estoque real do servidor ao abrir a página
-        async function carregarEstoque() {
-            const res = await fetch(`${API_URL}/consultar-estoque`);
-            const estoque = await res.json();
-            
-            const lista = document.getElementById('lista-estoque');
-            lista.innerHTML = "";
+        // Lista oficial de IDs da Serentti para o primeiro cadastro
+        const idsProdutos = [
+            "col-fem-1", "col-fem-2", "col-fem-3", "col-fem-4", "col-fem-5",
+            "pul-fem-1", "pul-fem-2", "pul-fem-3", "pul-fem-4", "pul-fem-5",
+            "col-masc-1", "col-masc-2", "col-masc-3", "col-masc-4",
+            "pul-masc-1", "pul-masc-2", "pul-masc-3"
+        ];
 
-            for (const id in estoque) {
-                lista.innerHTML += `
-                    <div class="item-estoque">
-                        <span><strong>${id}</strong></span>
-                        <div>
-                            <input type="number" id="input-${id}" value="${estoque[id]}">
-                            <button onclick="salvar('${id}')">Salvar</button>
+        async function carregarEstoque() {
+            try {
+                const res = await fetch(`${API_URL}/consultar-estoque`);
+                const estoqueReal = await res.json();
+                
+                const lista = document.getElementById('lista-estoque');
+                lista.innerHTML = "";
+
+                // Percorremos nossa lista oficial. Se o ID já existir no banco, usamos o valor de lá. 
+                // Se não existir (estiver vazio), mostramos 0.
+                idsProdutos.forEach(id => {
+                    const qtd = estoqueReal[id] !== undefined ? estoqueReal[id] : 0;
+                    
+                    lista.innerHTML += `
+                        <div class="item-estoque">
+                            <span><strong>${id}</strong></span>
+                            <div>
+                                <input type="number" id="input-${id}" value="${qtd}">
+                                <button onclick="salvar('${id}')">Salvar</button>
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                });
+            } catch (err) {
+                document.getElementById('lista-estoque').innerHTML = "<p style='color:red; text-align:center;'>Erro ao conectar com o servidor.</p>";
             }
         }
 
-        // 2. Envia a atualização para o servidor
         async function salvar(id) {
             const qtd = document.getElementById(`input-${id}`).value;
-            const res = await fetch(`${API_URL}/atualizar-estoque`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, quantidade: qtd })
-            });
+            try {
+                const res = await fetch(`${API_URL}/atualizar-estoque`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id, quantidade: qtd })
+                });
 
-            if (res.ok) alert(`Produto ${id} atualizado para ${qtd} unidades.`);
+                if (res.ok) {
+                    alert(`Produto ${id} atualizado com sucesso!`);
+                } else {
+                    alert("Erro ao salvar no banco de dados.");
+                }
+            } catch (err) {
+                alert("Erro de conexão com o servidor.");
+            }
         }
 
         carregarEstoque();
