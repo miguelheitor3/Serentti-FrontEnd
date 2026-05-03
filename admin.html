@@ -5,13 +5,67 @@
     <title>Admin Serentti - Gestão de Estoque</title>
     <style>
         body { font-family: 'Jost', sans-serif; padding: 40px; background: #f4f4f4; }
-        .container { max-width: 600px; background: white; padding: 20px; border-radius: 8px; margin: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { text-align: center; letter-spacing: 2px; font-weight: 300; }
-        .item-estoque { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .container { max-width: 700px; background: white; padding: 30px; border-radius: 12px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { text-align: center; letter-spacing: 3px; font-weight: 300; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        
+        .item-estoque { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 20px; 
+            border-bottom: 1px solid #f9f9f9; 
+        }
         .item-estoque:last-child { border-bottom: none; }
-        input { width: 70px; padding: 8px; text-align: center; border: 1px solid #ddd; border-radius: 4px; }
-        button { background: #1a1a1a; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; transition: 0.3s; }
-        button:hover { background: #444; }
+        
+        .produto-info-wrap {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        /* AJUSTE DO TAMANHO DA IMAGEM */
+        .thumb-admin {
+            width: 100px; /* Dobro do tamanho anterior */
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            background: #f0f0f0;
+            border: 1px solid #eee;
+        }
+        
+        .id-texto {
+            font-weight: bold;
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .controles {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input { 
+            width: 80px; 
+            padding: 10px; 
+            text-align: center; 
+            border: 1px solid #ddd; 
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+        
+        button { 
+            background: #1a1a1a; 
+            color: white; 
+            border: none; 
+            padding: 10px 20px; 
+            cursor: pointer; 
+            border-radius: 6px; 
+            transition: 0.3s;
+            font-weight: 500;
+        }
+        button:hover { background: #444; transform: translateY(-1px); }
+        
         .loading { text-align: center; color: #888; padding: 20px; }
     </style>
 </head>
@@ -19,43 +73,13 @@
     <div class="container">
         <h2>SERENTTI - ESTOQUE</h2>
         <div id="lista-estoque">
-            <p class="loading">Carregando estoque...</p>
+            <p class="loading">Carregando catálogo e estoque...</p>
         </div>
     </div>
-
-    <!-- ... (mantenha o seu <style> anterior e adicione/ajuste estas classes abaixo) ... -->
-<style>
-    .item-estoque { 
-        display: flex; 
-        justify-content: space-between; 
-        align-items: center; 
-        padding: 15px; 
-        border-bottom: 1px solid #eee; 
-    }
-    .produto-info-wrap {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    .thumb-admin {
-        width: 50px;
-        height: 50px;
-        object-fit: cover;
-        border-radius: 4px;
-        background: #f0f0f0;
-    }
-    .id-texto {
-        font-weight: bold;
-        font-size: 0.9rem;
-    }
-</style>
-
-<!-- ... no seu <script> ... -->
 
 <script>
     const API_URL = "https://serentti-backend.onrender.com";
 
-    // Mapeamento de pastas baseado no ID para facilitar a busca das fotos
     const idsProdutos = [
         "col-fem-1", "col-fem-2", "col-fem-3", "col-fem-4", "col-fem-5",
         "pul-fem-1", "pul-fem-2", "pul-fem-3", "pul-fem-4", "pul-fem-5",
@@ -63,16 +87,13 @@
         "pul-masc-1", "pul-masc-2", "pul-masc-3"
     ];
 
-    // Função para descobrir o caminho da imagem baseado no prefixo do ID
     function getCaminhoFoto(id) {
         if (id.startsWith('col-fem')) return `Images/ColarFeminino/${id}.png`;
         if (id.startsWith('pul-fem')) {
-            // No seu HTML, a primeira pulseira feminina é .jpeg
             return id === 'pul-fem-1' ? `Images/PulseiraFeminino/${id}.jpeg` : `Images/PulseiraFeminino/${id}.png`;
         }
         if (id.startsWith('col-masc')) return `Images/ColarMasculino/${id}.png`;
         if (id.startsWith('pul-masc')) {
-            // A segunda pulseira masculina também é .jpeg[cite: 7]
             return id === 'pul-masc-2' ? `Images/PulseiraMasculino/${id}.jpeg` : `Images/PulseiraMasculino/${id}.png`;
         }
         return '';
@@ -88,15 +109,15 @@
 
             idsProdutos.forEach(id => {
                 const qtd = estoqueReal[id] !== undefined ? estoqueReal[id] : 0;
-                const fotoPath = getCaminhoFoto(id); // Pega o caminho da foto[cite: 7]
+                const fotoPath = getCaminhoFoto(id);
                 
                 lista.innerHTML += `
                     <div class="item-estoque">
                         <div class="produto-info-wrap">
-                            <img src="${fotoPath}" class="thumb-admin" onerror="this.src='https://via.placeholder.com/50?text=S'">
+                            <img src="${fotoPath}" class="thumb-admin" onerror="this.src='https://via.placeholder.com/100?text=Sem+Foto'">
                             <span class="id-texto">${id}</span>
                         </div>
-                        <div>
+                        <div class="controles">
                             <input type="number" id="input-${id}" value="${qtd}">
                             <button onclick="salvar('${id}')">Salvar</button>
                         </div>
@@ -104,11 +125,32 @@
                 `;
             });
         } catch (err) {
-            document.getElementById('lista-estoque').innerHTML = "<p style='color:red;'>Erro ao carregar dados.</p>";
+            document.getElementById('lista-estoque').innerHTML = "<p style='color:red;'>Erro ao carregar dados do servidor.</p>";
+        }
+    }
+
+    async function salvar(id) {
+        const input = document.getElementById(`input-${id}`);
+        const novaQuantidade = input.value;
+
+        try {
+            const response = await fetch(`${API_URL}/atualizar-estoque`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: id, quantidade: novaQuantidade })
+            });
+
+            if (response.ok) {
+                alert(`✅ Estoque de ${id} atualizado!`);
+            } else {
+                alert("❌ Erro ao salvar no banco.");
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+            alert("❌ Sem conexão com o servidor.");
         }
     }
     
-    // ... manter a função salvar() igual ...
     carregarEstoque();
 </script>
 </body>
