@@ -1408,7 +1408,21 @@ document.getElementById('f-cpf').addEventListener('input', function () {
 // ── FINALIZAR (VERSÃO CORRIGIDA E SEGURA) ──
 async function finalizar() {
   try {
-    // 1. Coleta os dados de entrega com os IDs CORRETOS (f- na frente)
+    // 1. Verificação de Estoque em Tempo Real
+    const stockCheck = await fetch("https://serentti-backend.onrender.com/check_stock", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ items: cart })
+    });
+
+    const stockResult = await stockCheck.json();
+
+    if (!stockResult.available) {
+      alert(`Ops! O item "${stockResult.item_name}" acabou de esgotar ou não possui quantidade suficiente em estoque.`);
+      return; // Interrompe o processo de pagamento
+    }
+
+    // 2. Se houver estoque, coleta os dados para o Mercado Pago
     const customer = {
       name: document.getElementById('f-nome').value,
       email: document.getElementById('f-email').value,
@@ -1425,30 +1439,16 @@ async function finalizar() {
       neighborhood: document.getElementById('f-bairro').value
     };
 
-    // 2. Prepara os itens do carrinho (Certifique-se de que a estrutura está correta)
     const itensParaPagamento = cart.map(item => ({
       id: item.id,
       title: item.name,
       unit_price: Number(item.price),
-      quantity: Number(item.qty) || 1,
+      quantity: Number(item.qty),
       currency_id: "BRL",
       picture_url: item.image
     }));
 
-    // 3. Calcula o frete para bater com o total visual
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    const valorFrete = subtotal >= 200 ? 0 : (subtotal >= 100 ? 12.9 : 18.9);
-
-    if (valorFrete > 0) {
-      itensParaPagamento.push({
-        title: "Frete (Correios)",
-        unit_price: valorFrete,
-        quantity: 1,
-        currency_id: "BRL"
-      });
-    }
-
-    // 4. Envio para o backend
+    // 3. Criação da Preferência de Pagamento
     const response = await fetch("https://serentti-backend.onrender.com/create_preference", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1463,13 +1463,11 @@ async function finalizar() {
 
     if (data.id) {
       window.location.href = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${data.id}`;
-    } else {
-      throw new Error("ID de preferência não retornado.");
     }
 
   } catch (error) {
     console.error("Erro no checkout:", error);
-    alert("Houve um problema ao gerar o pagamento. Por favor, preencha todos os campos de entrega.");
+    alert("Houve um problema ao processar seu pedido. Tente novamente em instantes.");
   }
 }
 
