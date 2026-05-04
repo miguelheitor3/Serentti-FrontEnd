@@ -5,6 +5,24 @@
     <title>Admin Serentti - Gestão de Estoque</title>
     <style>
         body { font-family: 'Jost', sans-serif; padding: 40px; background: #f4f4f4; }
+        
+        /* Estilo da Tela de Login */
+        #tela-login {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+        }
+        #tela-login input { margin-bottom: 10px; width: 250px; }
+
+        /* Esconde o painel por padrão */
+        #painel-admin { display: none; }
+
         .container { max-width: 700px; background: white; padding: 30px; border-radius: 12px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         h2 { text-align: center; letter-spacing: 3px; font-weight: 300; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
         
@@ -23,9 +41,8 @@
             gap: 20px;
         }
         
-        /* AJUSTE DO TAMANHO DA IMAGEM */
         .thumb-admin {
-            width: 100px; /* Dobro do tamanho anterior */
+            width: 100px;
             height: 100px;
             object-fit: cover;
             border-radius: 8px;
@@ -70,15 +87,44 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>SERENTTI - ESTOQUE</h2>
-        <div id="lista-estoque">
-            <p class="loading">Carregando catálogo e estoque...</p>
+
+    <!-- TELA DE LOGIN -->
+    <div id="tela-login">
+        <h2 style="color: white; border: none;">ACESSO RESTRITO</h2>
+        <input type="password" id="senha-input" placeholder="Digite a senha mestre">
+        <button onclick="verificarSenha()">Entrar</button>
+        <p id="erro-senha" style="color: #ff4d4d; margin-top: 10px; display: none;">Senha incorreta!</p>
+    </div>
+
+    <!-- PAINEL PROTEGIDO -->
+    <div id="painel-admin">
+        <div class="container">
+            <h2>SERENTTI - ESTOQUE</h2>
+            <div id="lista-estoque">
+                <p class="loading">Carregando catálogo e estoque...</p>
+            </div>
         </div>
     </div>
 
 <script>
     const API_URL = "https://serentti-backend.onrender.com";
+    const SENHA_MESTRE = "SUA_SENHA_AQUI"; // <-- COLOQUE SUA SENHA AQUI
+
+    function verificarSenha() {
+        const senhaDigitada = document.getElementById('senha-input').value;
+        if (senhaDigitada === SENHA_MESTRE) {
+            document.getElementById('tela-login').style.display = 'none';
+            document.getElementById('painel-admin').style.display = 'block';
+            carregarEstoque(); // Só carrega os dados após acertar a senha
+        } else {
+            document.getElementById('erro-senha').style.display = 'block';
+        }
+    }
+
+    // Permitir apertar "Enter" para entrar
+    document.getElementById('senha-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') verificarSenha();
+    });
 
     const idsProdutos = [
         "col-fem-1", "col-fem-2", "col-fem-3", "col-fem-4", "col-fem-5",
@@ -150,8 +196,6 @@
             alert("❌ Sem conexão com o servidor.");
         }
     }
-    
-    carregarEstoque();
 </script>
 </body>
 </html>
