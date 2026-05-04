@@ -6,7 +6,6 @@
     <style>
         body { font-family: 'Jost', sans-serif; padding: 40px; background: #f4f4f4; }
         
-        /* Estilo da Tela de Login */
         #tela-login {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -27,10 +26,9 @@
             text-align: center;
         }
 
-        /* Esconde o painel por padrão */
         #painel-admin { display: none; }
 
-        .container { max-width: 700px; background: white; padding: 30px; border-radius: 12px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .container { max-width: 850px; background: white; padding: 30px; border-radius: 12px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         h2 { text-align: center; letter-spacing: 3px; font-weight: 300; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
         
         .item-estoque { 
@@ -39,18 +37,20 @@
             align-items: center; 
             padding: 20px; 
             border-bottom: 1px solid #f9f9f9; 
+            gap: 10px;
         }
         .item-estoque:last-child { border-bottom: none; }
         
         .produto-info-wrap {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
+            flex: 1;
         }
         
         .thumb-admin {
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             object-fit: cover;
             border-radius: 8px;
             background: #f0f0f0;
@@ -59,30 +59,33 @@
         
         .id-texto {
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #333;
+            min-width: 90px;
         }
 
         .controles {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .input-qtd { 
-            width: 80px; 
+        /* Estilo dos Inputs */
+        .input-qtd, .input-codigo { 
             padding: 10px; 
             text-align: center; 
             border: 1px solid #ddd; 
             border-radius: 6px;
-            font-size: 1rem;
+            font-size: 0.9rem;
         }
+        .input-qtd { width: 60px; }
+        .input-codigo { width: 120px; background: #fafafa; }
         
         button { 
             background: #1a1a1a; 
             color: white; 
             border: none; 
-            padding: 10px 20px; 
+            padding: 10px 15px; 
             cursor: pointer; 
             border-radius: 6px; 
             transition: 0.3s;
@@ -95,7 +98,6 @@
 </head>
 <body>
 
-    <!-- TELA DE LOGIN -->
     <div id="tela-login">
         <h2 style="color: white; border: none;">SERENTTI ADMIN</h2>
         <input type="password" id="senha-input" placeholder="Senha de Acesso">
@@ -103,7 +105,6 @@
         <p id="erro-senha" style="color: #ff4d4d; margin-top: 10px; display: none;">Senha incorreta ou erro de conexão!</p>
     </div>
 
-    <!-- PAINEL PROTEGIDO -->
     <div id="painel-admin">
         <div class="container">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -120,7 +121,6 @@
     const API_URL = "https://serentti-backend.onrender.com";
     let senhaValidada = ""; 
 
-    // 1. VERIFICAÇÃO DE LOGIN NO BACKEND
     async function verificarSenha() {
         const input = document.getElementById('senha-input');
         const erro = document.getElementById('erro-senha');
@@ -156,7 +156,6 @@
         location.reload();
     }
 
-    // Permitir Enter no login
     document.getElementById('senha-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') verificarSenha();
     });
@@ -189,7 +188,12 @@
             lista.innerHTML = "";
 
             idsProdutos.forEach(id => {
-                const qtd = estoqueReal[id] !== undefined ? estoqueReal[id] : 0;
+                // Aqui assumimos que o backend retorna um objeto onde cada ID tem {qtd, codigo}
+                // Se o seu backend ainda não tem o campo codigo, ele virá como vazio.
+                const dados = estoqueReal[id] || { qtd: 0, codigo: "" };
+                const qtd = typeof dados === 'object' ? dados.qtd : dados;
+                const codProd = dados.codigo || "";
+                
                 const fotoPath = getCaminhoFoto(id);
                 
                 lista.innerHTML += `
@@ -199,6 +203,7 @@
                             <span class="id-texto">${id}</span>
                         </div>
                         <div class="controles">
+                            <input type="text" class="input-codigo" id="cod-${id}" placeholder="Cód. Ref" value="${codProd}">
                             <input type="number" class="input-qtd" id="input-${id}" value="${qtd}">
                             <button onclick="salvar('${id}')">Salvar</button>
                         </div>
@@ -210,10 +215,13 @@
         }
     }
 
-    // 2. SALVAR COM PROTEÇÃO DE SENHA
     async function salvar(id) {
-        const input = document.getElementById(`input-${id}`);
-        const novaQuantidade = input.value;
+        const inputQtd = document.getElementById(`input-${id}`);
+        const inputCod = document.getElementById(`cod-${id}`);
+        
+        const novaQuantidade = inputQtd.value;
+        const novoCodigo = inputCod.value; // Pega o valor digitado no novo campo
+        
         const btn = event.target;
         const originalText = btn.innerText;
 
@@ -227,7 +235,8 @@
                 body: JSON.stringify({ 
                     id: id, 
                     quantidade: novaQuantidade,
-                    senha: senhaValidada // Enviando a senha que foi validada no login
+                    codigo_produto: novoCodigo, // Enviando o novo campo para o backend
+                    senha: senhaValidada 
                 })
             });
 
@@ -239,7 +248,7 @@
                     btn.disabled = false;
                 }, 1000);
             } else {
-                alert("❌ Erro: Sessão expirada ou sem permissão.");
+                alert("❌ Erro: Verifique se o backend aceita o campo 'codigo_produto' ou se a sessão expirou.");
                 location.reload();
             }
         } catch (error) {
