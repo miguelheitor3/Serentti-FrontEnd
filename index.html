@@ -1333,6 +1333,19 @@ document.getElementById('f-cep').addEventListener('blur', async function () {
     document.getElementById('f-estado').value = data.uf || '';
     document.getElementById('f-bairro').value = data.bairro || '';
 
+    const totalItens = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+        
+        if (data.uf === 'MG') {
+            // Valor para Minas Gerais (Saindo de Três Pontas)
+            window.valorFreteManual = totalItens >= 200 ? 0 : 12.90;
+        } else {
+            // Valor para o resto do Brasil
+            window.valorFreteManual = totalItens >= 200 ? 0 : 22.90;
+        }
+        
+        // Atualiza o resumo visual para o cliente ver o frete somado
+        renderSummary();
+    
   } catch (e) {
     console.error(e);
     alert('Erro ao buscar CEP.');
