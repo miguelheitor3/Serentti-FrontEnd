@@ -1470,7 +1470,8 @@ async function finalizar() {
       body: JSON.stringify({
         items: itensParaPagamento,
         customer: customer,
-        address: address
+        address: address,
+        frete: window.valorFreteManual
       })
     });
 
