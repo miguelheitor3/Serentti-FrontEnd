@@ -1420,24 +1420,35 @@ document.getElementById('f-cpf').addEventListener('input', function () {
     .slice(0, 14);
 });
 
-// ── FINALIZAR (VERSÃO CORRIGIDA E SEGURA) ──
+// ── FINALIZAR (VERSÃO INTEGRADA COM ESTOQUE E MERCADO PAGO) ──
 async function finalizar() {
   try {
-    // 1. Verificação de Estoque em Tempo Real
+    // 1. FORMATAÇÃO: Traduzimos 'qty' para 'quantity' para o servidor entender
+    const itensFormatados = cart.map(item => ({
+      id: item.id,
+      title: item.name,
+      unit_price: Number(item.price),
+      quantity: Number(item.qty), // O segredo está aqui: convertendo para o nome que o backend exige
+      currency_id: "BRL",
+      picture_url: item.image
+    }));
+
+    // 2. VERIFICAÇÃO DE ESTOQUE
+    // Enviamos 'itensFormatados' para que o backend consiga ler as quantidades
     const stockCheck = await fetch("https://serentti-backend.onrender.com/check_stock", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items: cart })
+      body: JSON.stringify({ items: itensFormatados })
     });
 
     const stockResult = await stockCheck.json();
 
     if (!stockResult.available) {
       alert(`Ops! O item "${stockResult.item_name}" acabou de esgotar ou não possui quantidade suficiente em estoque.`);
-      return; // Interrompe o processo de pagamento
+      return; // Para o processo aqui se não houver estoque
     }
 
-    // 2. Se houver estoque, coleta os dados para o Mercado Pago
+    // 3. COLETA DE DADOS (Se chegou aqui, tem estoque)
     const customer = {
       name: document.getElementById('f-nome').value,
       email: document.getElementById('f-email').value,
@@ -1454,36 +1465,30 @@ async function finalizar() {
       neighborhood: document.getElementById('f-bairro').value
     };
 
-    const itensParaPagamento = cart.map(item => ({
-      id: item.id,
-      title: item.name,
-      unit_price: Number(item.price),
-      quantity: Number(item.qty),
-      currency_id: "BRL",
-      picture_url: item.image
-    }));
-
-    // 3. Criação da Preferência de Pagamento
+    // 4. CRIAÇÃO DA PREFERÊNCIA DE PAGAMENTO
     const response = await fetch("https://serentti-backend.onrender.com/create_preference", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        items: itensParaPagamento,
+        items: itensFormatados,
         customer: customer,
         address: address,
-        frete: window.valorFreteManual
+        frete: window.valorFreteManual || 0 // Garante que não vá vazio
       })
     });
 
     const data = await response.json();
 
+    // 5. REDIRECIONAMENTO PARA O MERCADO PAGO
     if (data.id) {
       window.location.href = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${data.id}`;
+    } else {
+      throw new Error("ID da preferência não retornado.");
     }
 
   } catch (error) {
     console.error("Erro no checkout:", error);
-    alert("Houve um problema ao processar seu pedido. Tente novamente em instantes.");
+    alert("Houve um problema ao processar seu pedido. Verifique os dados e tente novamente.");
   }
 }
 
