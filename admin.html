@@ -18,7 +18,14 @@
             z-index: 1000;
             color: white;
         }
-        #tela-login input { margin-bottom: 10px; width: 250px; }
+        #tela-login input { 
+            margin-bottom: 10px; 
+            width: 250px; 
+            padding: 12px; 
+            border-radius: 6px; 
+            border: none;
+            text-align: center;
+        }
 
         /* Esconde o painel por padrão */
         #painel-admin { display: none; }
@@ -62,7 +69,7 @@
             gap: 10px;
         }
 
-        input { 
+        .input-qtd { 
             width: 80px; 
             padding: 10px; 
             text-align: center; 
@@ -90,39 +97,67 @@
 
     <!-- TELA DE LOGIN -->
     <div id="tela-login">
-        <h2 style="color: white; border: none;">ACESSO RESTRITO</h2>
-        <input type="password" id="senha-input" placeholder="Digite a senha mestre">
-        <button onclick="verificarSenha()">Entrar</button>
-        <p id="erro-senha" style="color: #ff4d4d; margin-top: 10px; display: none;">Senha incorreta!</p>
+        <h2 style="color: white; border: none;">SERENTTI ADMIN</h2>
+        <input type="password" id="senha-input" placeholder="Senha de Acesso">
+        <button id="btn-entrar" onclick="verificarSenha()">Entrar</button>
+        <p id="erro-senha" style="color: #ff4d4d; margin-top: 10px; display: none;">Senha incorreta ou erro de conexão!</p>
     </div>
 
     <!-- PAINEL PROTEGIDO -->
     <div id="painel-admin">
         <div class="container">
-            <h2>SERENTTI - ESTOQUE</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>ESTOQUE</h2>
+                <button onclick="logout()" style="padding: 5px 10px; font-size: 12px; background: #cc0000;">Sair</button>
+            </div>
             <div id="lista-estoque">
-                <p class="loading">Carregando catálogo e estoque...</p>
+                <p class="loading">Carregando catálogo...</p>
             </div>
         </div>
     </div>
 
 <script>
     const API_URL = "https://serentti-backend.onrender.com";
-    const SENHA_MESTRE = "SUA_SENHA_AQUI"; // <-- COLOQUE SUA SENHA AQUI
+    let senhaValidada = ""; 
 
-    function verificarSenha() {
-        const senhaDigitada = document.getElementById('senha-input').value;
-        if (senhaDigitada === SENHA_MESTRE) {
-            document.getElementById('tela-login').style.display = 'none';
-            document.getElementById('painel-admin').style.display = 'block';
-            carregarEstoque(); // Só carrega os dados após acertar a senha
-        } else {
-            document.getElementById('erro-senha').style.display = 'block';
+    // 1. VERIFICAÇÃO DE LOGIN NO BACKEND
+    async function verificarSenha() {
+        const input = document.getElementById('senha-input');
+        const erro = document.getElementById('erro-senha');
+        const btn = document.getElementById('btn-entrar');
+
+        btn.innerText = "Verificando...";
+        erro.style.display = 'none';
+
+        try {
+            const res = await fetch(`${API_URL}/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ senha: input.value })
+            });
+
+            if (res.ok) {
+                senhaValidada = input.value;
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('painel-admin').style.display = 'block';
+                carregarEstoque();
+            } else {
+                erro.style.display = 'block';
+                input.value = "";
+            }
+        } catch (err) {
+            alert("Erro ao conectar com o servidor.");
+        } finally {
+            btn.innerText = "Entrar";
         }
     }
 
-    // Permitir apertar "Enter" para entrar
-    document.getElementById('senha-input').addEventListener('keypress', function (e) {
+    function logout() {
+        location.reload();
+    }
+
+    // Permitir Enter no login
+    document.getElementById('senha-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') verificarSenha();
     });
 
@@ -164,36 +199,53 @@
                             <span class="id-texto">${id}</span>
                         </div>
                         <div class="controles">
-                            <input type="number" id="input-${id}" value="${qtd}">
+                            <input type="number" class="input-qtd" id="input-${id}" value="${qtd}">
                             <button onclick="salvar('${id}')">Salvar</button>
                         </div>
                     </div>
                 `;
             });
         } catch (err) {
-            document.getElementById('lista-estoque').innerHTML = "<p style='color:red;'>Erro ao carregar dados do servidor.</p>";
+            document.getElementById('lista-estoque').innerHTML = "<p style='color:red;'>Erro ao carregar dados.</p>";
         }
     }
 
+    // 2. SALVAR COM PROTEÇÃO DE SENHA
     async function salvar(id) {
         const input = document.getElementById(`input-${id}`);
         const novaQuantidade = input.value;
+        const btn = event.target;
+        const originalText = btn.innerText;
+
+        btn.innerText = "...";
+        btn.disabled = true;
 
         try {
             const response = await fetch(`${API_URL}/atualizar-estoque`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id: id, quantidade: novaQuantidade })
+                body: JSON.stringify({ 
+                    id: id, 
+                    quantidade: novaQuantidade,
+                    senha: senhaValidada // Enviando a senha que foi validada no login
+                })
             });
 
             if (response.ok) {
-                alert(`✅ Estoque de ${id} atualizado!`);
+                btn.style.background = "#28a745";
+                setTimeout(() => { 
+                    btn.style.background = "#1a1a1a"; 
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }, 1000);
             } else {
-                alert("❌ Erro ao salvar no banco.");
+                alert("❌ Erro: Sessão expirada ou sem permissão.");
+                location.reload();
             }
         } catch (error) {
-            console.error("Erro:", error);
-            alert("❌ Sem conexão com o servidor.");
+            alert("❌ Erro de conexão.");
+            btn.innerText = originalText;
+            btn.disabled = false;
         }
     }
 </script>
