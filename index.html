@@ -1260,9 +1260,6 @@ document.querySelectorAll('.productSwiper').forEach(s => {
       `;
     }).join('');
   
-    // LÓGICA DE FRETE (Expedido de Três Pontas)
-    // Como você quer algo automático, o ideal seria API dos Correios, 
-    // mas para simplicidade e conversão, usamos regras fixas:
     let frete = totalItens >= 200 ? 0 : 18.90; 
     
     const freteLabel = frete === 0 ? '<span style="color:green">Grátis</span>' : `R$ ${frete.toFixed(2).replace('.',',')}`;
@@ -1271,7 +1268,7 @@ document.querySelectorAll('.productSwiper').forEach(s => {
       <div class="order-item" style="background: #fdfdfd; border-top: 1px dashed #eee;">
         <div class="order-item-img">📦</div>
         <div>
-          <div class="order-item-name">Frete (Saindo de Três Pontas/MG)</div>
+          <div class="order-item-name">Frete</div>
           <div class="order-item-material">Entrega via Correios</div>
         </div>
         <div class="order-item-price">${freteLabel}</div>
@@ -1403,7 +1400,7 @@ document.getElementById('f-cep').addEventListener('blur', async function () {
     const totalItens = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
         
         if (data.uf === 'MG') {
-            // Valor para Minas Gerais (Saindo de Três Pontas)
+            // Valor para Minas Gerais
             window.valorFreteManual = totalItens >= 200 ? 0 : 12.90;
         } else {
             // Valor para o resto do Brasil
