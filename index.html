@@ -211,20 +211,7 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-
-    /* ── Success ── */
-    <div id="success-popup" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-        <div style="background: white; padding: 40px; border-radius: 2px; max-width: 400px; text-align: center; font-family: 'Cormorant Garamond', serif; position: relative;">
-            <div style="font-size: 40px; color: #27ae60; margin-bottom: 20px;">✓</div>
-            <h2 style="letter-spacing: 2px; margin-bottom: 15px;">PEDIDO CONFIRMADO</h2>
-            <p style="color: #666; line-height: 1.6; font-family: sans-serif; font-size: 14px;">
-                Obrigado por escolher a <strong>Serentti</strong>. <br><br>
-                Enviamos um e-mail com todos os detalhes da sua joia. Por favor, <strong>verifique também sua caixa de spam</strong>.
-            </p>
-            <button onclick="fecharPopup()" style="margin-top: 25px; background: #1a1a1a; color: white; border: none; padding: 12px 30px; cursor: pointer; letter-spacing: 2px; width: 100%;">FECHAR</button>
-        </div>
-    </div>
-
+   
     /* ── HEADER ── */
     header {
       position: fixed; top: 0; left: 0; right: 0;
@@ -683,6 +670,19 @@
 
 <body>
 
+   /* ── Success PopUP ── */
+    <div id="success-popup" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div style="background: white; padding: 40px; border-radius: 2px; max-width: 400px; text-align: center; font-family: 'Cormorant Garamond', serif; position: relative;">
+            <div style="font-size: 40px; color: #27ae60; margin-bottom: 20px;">✓</div>
+            <h2 style="letter-spacing: 2px; margin-bottom: 15px;">PEDIDO CONFIRMADO</h2>
+            <p style="color: #666; line-height: 1.6; font-family: sans-serif; font-size: 14px;">
+                Obrigado por escolher a <strong>Serentti</strong>. <br><br>
+                Enviamos um e-mail com todos os detalhes da sua joia. Por favor, <strong>verifique também sua caixa de spam</strong>.
+            </p>
+            <button onclick="fecharPopup()" style="margin-top: 25px; background: #1a1a1a; color: white; border: none; padding: 12px 30px; cursor: pointer; letter-spacing: 2px; width: 100%;">FECHAR</button>
+        </div>
+    </div>
+  
   <!-- Camada de carregamento (Backend acordando) -->
   <div id="loading-overlay">
     <div class="spinner"></div>
