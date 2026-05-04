@@ -46,8 +46,13 @@
             align-items: center;
             gap: 15px;
             flex: 1;
+            pointer-events: none; /* Evita que o clique no texto interfira nos inputs */
         }
         
+        .thumb-admin, .id-texto, .controles {
+            pointer-events: auto; /* Reativa o clique para os elementos internos */
+        }
+
         .thumb-admin {
             width: 80px;
             height: 80px;
@@ -79,7 +84,11 @@
             font-size: 0.9rem;
         }
         .input-qtd { width: 60px; }
-        .input-codigo { width: 120px; background: #fafafa; }
+        .input-codigo { 
+            width: 120px; 
+            background: #ffffff !important; /* Força fundo branco para indicar edição */
+            cursor: text;
+        }
         
         button { 
             background: #1a1a1a; 
@@ -188,8 +197,6 @@
             lista.innerHTML = "";
 
             idsProdutos.forEach(id => {
-                // Aqui assumimos que o backend retorna um objeto onde cada ID tem {qtd, codigo}
-                // Se o seu backend ainda não tem o campo codigo, ele virá como vazio.
                 const dados = estoqueReal[id] || { qtd: 0, codigo: "" };
                 const qtd = typeof dados === 'object' ? dados.qtd : dados;
                 const codProd = dados.codigo || "";
@@ -205,7 +212,7 @@
                         <div class="controles">
                             <input type="text" class="input-codigo" id="cod-${id}" placeholder="Cód. Ref" value="${codProd}">
                             <input type="number" class="input-qtd" id="input-${id}" value="${qtd}">
-                            <button onclick="salvar('${id}')">Salvar</button>
+                            <button onclick="salvar('${id}', this)">Salvar</button>
                         </div>
                     </div>
                 `;
@@ -215,14 +222,13 @@
         }
     }
 
-    async function salvar(id) {
+    async function salvar(id, btn) {
         const inputQtd = document.getElementById(`input-${id}`);
         const inputCod = document.getElementById(`cod-${id}`);
         
         const novaQuantidade = inputQtd.value;
-        const novoCodigo = inputCod.value; // Pega o valor digitado no novo campo
+        const novoCodigo = inputCod.value; 
         
-        const btn = event.target;
         const originalText = btn.innerText;
 
         btn.innerText = "...";
@@ -235,7 +241,7 @@
                 body: JSON.stringify({ 
                     id: id, 
                     quantidade: novaQuantidade,
-                    codigo_produto: novoCodigo, // Enviando o novo campo para o backend
+                    codigo_produto: novoCodigo, 
                     senha: senhaValidada 
                 })
             });
@@ -248,8 +254,9 @@
                     btn.disabled = false;
                 }, 1000);
             } else {
-                alert("❌ Erro: Verifique se o backend aceita o campo 'codigo_produto' ou se a sessão expirou.");
-                location.reload();
+                alert("❌ Erro ao salvar: Verifique o servidor ou a sessão.");
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
         } catch (error) {
             alert("❌ Erro de conexão.");
